@@ -1,0 +1,91 @@
+.project {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 5%; /* Changed to flexible units */
+    border-top: 1px solid rgb(201, 201, 201);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.project:last-of-type {
+    border-bottom: 1px solid rgb(201, 201, 201);
+}
+
+.project:hover {
+    opacity: 0.5;
+}
+
+.project:hover h2 {
+    transform: translateX(-10px);
+}
+
+.project:hover p {
+    transform: translateX(10px);
+}
+
+.project h2 {
+    font-size: 3rem; /* Use rem for scalability */
+    margin: 0;
+    font-weight: 400;
+    transition: all 0.4s;
+}
+
+.project p {
+    transition: all 0.4s;
+    font-weight: 300;
+}
+
+/* Media Queries for Responsiveness */
+
+/* Large screens */
+@media (min-width: 1200px) {
+    .project h2 {
+        font-size: 4rem;
+    }
+    .project p {
+        font-size: 1.5rem;
+    }
+}
+
+/* Medium screens */
+@media (max-width: 1199px) and (min-width: 768px) {
+    .project {
+        padding: 2rem 4%;
+    }
+    .project h2 {
+        font-size: 3.5rem;
+    }
+    .project p {
+        font-size: 1.25rem;
+    }
+}
+
+/* Small screens */
+@media (max-width: 767px) {
+    .project {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.5rem 3%;
+    }
+    .project h2 {
+        font-size: 3rem;
+    }
+    .project p {
+        font-size: 1rem;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .project {
+        padding: 1rem 2%;
+    }
+    .project h2 {
+        font-size: 2.5rem;
+    }
+    .project p {
+        font-size: 0.875rem;
+    }
+}
