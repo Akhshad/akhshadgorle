@@ -80,7 +80,7 @@ function Footer() {
         </div>
         </div>
         <p className="text-center text-sm pt-8">© 2024  All rights Reserved.</p>
-        <p className="text-center pt-3 ">Designed & Developed by <span className="text-blue-400 hover:text-pink-500 font-bold">Akhshad Gorle</span></p>
+        <p className="text-center pt-3 ">Designed & Developed by <span className="text-blue-400?? hover:text-pink-500 font-bold">Akhshad Gorle</span></p>
     </footer>
   )
 }
