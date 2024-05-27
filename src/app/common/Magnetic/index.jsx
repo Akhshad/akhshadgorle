@@ -5,12 +5,15 @@ export default function MagneticWrapper({ children }) {
   const magnetic = useRef(null);
 
   useEffect(() => {
-    const xTo = gsap.quickTo(magnetic.current, "x", { duration: 1, ease: "elastic.out(1, 0.3)" });
-    const yTo = gsap.quickTo(magnetic.current, "y", { duration: 1, ease: "elastic.out(1, 0.3)" });
+    // Create a variable to store the current ref value
+    const magneticDOM = magnetic.current;
+
+    const xTo = gsap.quickTo(magneticDOM, "x", { duration: 1, ease: "elastic.out(1, 0.3)" });
+    const yTo = gsap.quickTo(magneticDOM, "y", { duration: 1, ease: "elastic.out(1, 0.3)" });
 
     const handleMouseMove = (e) => {
       const { clientX, clientY } = e;
-      const { height, width, left, top } = magnetic.current.getBoundingClientRect();
+      const { height, width, left, top } = magneticDOM.getBoundingClientRect();
       const x = clientX - (left + width / 2);
       const y = clientY - (top + height / 2);
       xTo(x * 0.35);
@@ -23,13 +26,13 @@ export default function MagneticWrapper({ children }) {
     };
 
     // Add event listeners
-    magnetic.current?.addEventListener("mousemove", handleMouseMove);
-    magnetic.current?.addEventListener("mouseleave", handleMouseLeave);
+    magneticDOM.addEventListener("mousemove", handleMouseMove);
+    magneticDOM.addEventListener("mouseleave", handleMouseLeave);
 
-    // Cleanup function: Safely remove event listeners using optional chaining
+    // Cleanup function using the stored variable
     return () => {
-      magnetic.current?.removeEventListener("mousemove", handleMouseMove);
-      magnetic.current?.removeEventListener("mouseleave", handleMouseLeave);
+      magneticDOM.removeEventListener("mousemove", handleMouseMove);
+      magneticDOM.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [children]); // Include children in dependency array if needed
 
