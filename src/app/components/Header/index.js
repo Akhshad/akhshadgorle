@@ -18,7 +18,7 @@ export default function Header() {
   // Handle pathname changes to reset active state
   useEffect(() => {
     setIsActive(false); // Reset active state on pathname change
-  }, [pathname]);
+  }, [pathname]); // Only depend on pathname
 
   // GSAP animation setup (consider adding comments for clarity)
   useLayoutEffect(() => {
