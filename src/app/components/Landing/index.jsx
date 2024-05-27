@@ -1,21 +1,20 @@
-'use client'
-import Image from 'next/image'
-import styles from './style.module.scss'
-import { useRef, useLayoutEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
+import Image from 'next/image';
+import styles from './style.module.scss';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/all';
-import { slideUp } from './animation';
+import { slideUp } from './animation'; // Import animation configuration
 import { motion } from 'framer-motion';
 
 export default function Home() {
-
   const firstText = useRef(null);
   const secondText = useRef(null);
   const slider = useRef(null);
   let xPercent = 0;
-  let direction = -1;
 
-  useLayoutEffect(() => {
+  const directionRef = useRef(-1); // Store direction using useRef
+
+  useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     gsap.to(slider.current, {
       scrollTrigger: {
@@ -23,12 +22,15 @@ export default function Home() {
         scrub: 0.25,
         start: 0,
         end: window.innerHeight,
-        onUpdate: e => direction = e.direction * -1
+        onUpdate: (e) => (directionRef.current = e.direction * -1), // Update direction using useRef
       },
       x: "-500px",
-    })
+    });
     requestAnimationFrame(animate);
-  }, [])
+
+    // Cleanup function to prevent memory leaks (optional)
+    return () => gsap.killTweensOf(slider.current);
+  }, []); // Empty dependency array for useEffect
 
   const animate = () => {
     if (xPercent < -100) {
@@ -39,16 +41,16 @@ export default function Home() {
     gsap.set(firstText.current, { xPercent: xPercent });
     gsap.set(secondText.current, { xPercent: xPercent });
     requestAnimationFrame(animate);
-    xPercent += 0.1 * direction;
-  }
+    xPercent += 0.1 * directionRef.current; // Use direction from useRef
+  };
 
   return (
     <motion.main variants={slideUp} initial="initial" animate="enter" className={styles.landing}>
-      <Image 
+      <Image
         src="/images/Akg.jpg"
         fill={true}
         alt="background"
-        priority={true} // Added priority property
+        priority={true} // Prioritize loading the background image
       />
       <div className={styles.sliderContainer}>
         <div ref={slider} className={styles.slider}>
@@ -64,5 +66,5 @@ export default function Home() {
         <p>DZ!NR & Developer</p>
       </div>
     </motion.main>
-  )
+  );
 }
