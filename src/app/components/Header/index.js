@@ -1,4 +1,4 @@
- 'use client'; // Mark `Header` as a Client Component (Solution 1)
+'use client'; // Mark `Header` as a Client Component (Solution 1)
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styles from './style.module.scss';
 import { usePathname } from 'next/navigation';
@@ -17,7 +17,7 @@ export default function Header() {
 
   // Handle pathname changes to reset active state
   useEffect(() => {
-    if (isActive) setIsActive(false); // Reset active state on pathname change
+    setIsActive(false); // Reset active state on pathname change
   }, [pathname]);
 
   // GSAP animation setup (consider adding comments for clarity)
