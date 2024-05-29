@@ -4,7 +4,8 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import Header from './components/Header';
 import Head from 'next/head'; 
-import Image from "next/image";
+import Image from "next/image"
+import { Analytics } from "@vercel/analytics/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark"> 
+    <Analytics/>
      <Head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" sizes="32x32" href="/AG.png" />
