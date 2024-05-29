@@ -24,10 +24,7 @@ const navItems = [
     title: "Graphic Design",
     href: "/gd",
   },
-  {
-    title: "Contact",
-    href: "/contact",
-  },
+ 
 ];
 
 function Nav() {
