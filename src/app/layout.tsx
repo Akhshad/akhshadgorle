@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark"> 
-    <Analytics/>
+  
      <Head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" sizes="32x32" href="/AG.png" />
@@ -29,6 +29,7 @@ export default function RootLayout({
        <body className={inter.className}>
         <Header />
         {children}
+        <Analytics/>
       </body>
     </html>
   );
