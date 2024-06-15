@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
-import { Tabs } from "../../components/ui/tabs"; // Ensure this path is correct
+import { Tabs } from "../../components/ui/tabs"; 
 
-const KaloriePage = () => {
+function KaloriePage() {
   const tabs = [
     {
       title: "1",
