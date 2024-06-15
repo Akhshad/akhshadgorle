@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { Tabs } from "../../components/ui/tabs"; // Ensure this path is correct
 
-const KaloriePage = (): JSX.Element => {
+const Kalorie = (): JSX.Element => {
   const tabs = [
     {
       title: "1",
@@ -151,4 +151,4 @@ const DummyContent4 = (): JSX.Element => (
   />
 );
 
-export default KaloriePage;
+export default Kalorie;
