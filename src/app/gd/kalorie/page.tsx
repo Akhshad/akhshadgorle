@@ -1,14 +1,15 @@
 "use client";
 import Image from "next/image";
-import { Tabs } from "../../components/ui/tabs"; 
+import { Tabs } from "../../components/ui/tabs";
 
-function kalorie() {
+export function kalorie() {
   const tabs = [
     {
       title: "1",
       value: "1",
       content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
+        <div className="w-full overflow-hidden relative h-full rounded-2xl  text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
+          {/* <p>Main</p> */}
           <DummyContent />
         </div>
       ),
@@ -18,6 +19,7 @@ function kalorie() {
       value: "2",
       content: (
         <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
+          {/* <p>Logo</p> */}
           <DummyContent1 />
         </div>
       ),
@@ -27,6 +29,7 @@ function kalorie() {
       value: "3",
       content: (
         <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
+          {/* <p>Scale</p> */}
           <DummyContent2 />
         </div>
       ),
@@ -36,6 +39,7 @@ function kalorie() {
       value: "4",
       content: (
         <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
+          {/* <p>Colors</p> */}
           <DummyContent3 />
         </div>
       ),
@@ -45,6 +49,7 @@ function kalorie() {
       value: "5",
       content: (
         <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
+          {/* <p>Branding</p> */}
           <DummyContent4 />
         </div>
       ),
@@ -99,56 +104,60 @@ function kalorie() {
       </div>
     </>
   );
-};
+}
 
 const DummyContent = () => (
-  <Image
-    src="/images/k-1.png"
-    alt="dummy image"
-    width="1000"
-    height="1000"
-    className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-  />
-);
-
-const DummyContent1 = () => (
-  <Image
-    src="/images/k-2.png"
-    alt="dummy image"
-    width="1000"
-    height="1000"
-    className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-  />
-);
-
-const DummyContent2 = () => (
-  <Image
-    src="/images/k-3.png"
-    alt="dummy image"
-    width="1000"
-    height="1000"
-    className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-  />
-);
-
-const DummyContent3 = () => (
-  <Image
-    src="/images/k-4.png"
-    alt="dummy image"
-    width="1000"
-    height="1000"
-    className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-  />
-);
-
-const DummyContent4 = () => (
-  <Image
-    src="/images/k-5.png"
-    alt="dummy image"
-    width="1000"
-    height="1000"
-    className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-  />
-);
+    <Image
+      src="/images/k-1.png"
+      alt="dummy image"
+      width="1000"
+      height="1000"
+      className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
+    />
+  );
+  
+  const DummyContent1 = () => (
+    <Image
+      src="/images/k-2.png"
+      alt="dummy image"
+      width="1000"
+      height="1000"
+      className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
+    />
+  );
+  
+  const DummyContent2 = () => (
+    <Image
+      src="/images/k-3.png"
+      alt="dummy image"
+      width="1000"
+      height="1000"
+      className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
+    />
+  );
+  
+  const DummyContent3 = () => (
+    <Image
+      src="/images/k-4.png"
+      alt="dummy image"
+      width="1000"
+      height="1000"
+      className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
+    />
+  );
+  
+  const DummyContent4 = () => (
+    <Image
+      src="/images/k-5.png"
+      alt="dummy image"
+      width="1000"
+      height="1000"
+      className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
+    />
+  );
+  
 
 export default kalorie;
+
+
+

@@ -59,7 +59,7 @@ export function xplore() {
   return (
     <>
      <h3 className="mt-20 text-4xl sm:text-4xl text-center font-bold relative  bg-clip-text text-transparent bg-gradient-to-b from-neutral-100 to-neutral-800 py-8">
-        XPLORE SALOON
+        Xplore Saloon
     </h3>
     <div className="h-[20rem] md:h-[40rem] [perspective:1000px] relative b flex flex-col max-w-5xl mx-auto w-full  items-start justify-start my-10">
       <Tabs tabs={tabs} />
