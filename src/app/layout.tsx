@@ -6,6 +6,7 @@ import Header from './components/Header';
 import Head from 'next/head'; 
 import Image from "next/image"
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -30,6 +31,7 @@ export default function RootLayout({
         <Header />
         {children}
         <Analytics/>
+        <SpeedInsights/>
       </body>
     </html>
   );
