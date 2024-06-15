@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { Tabs } from "../../components/ui/tabs";
 
-export function TabsDemo() {
+export function kalorie() {
   const tabs = [
     {
       title: "1",
@@ -168,4 +168,4 @@ const DummyContent2 = () => {
     );
   };
 
-export default TabsDemo;
+export default kalorie;
