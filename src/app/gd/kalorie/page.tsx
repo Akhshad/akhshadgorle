@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { Tabs } from "../../components/ui/tabs"; // Adjust the path if necessary
+import { Tabs } from "../../components/ui/tabs"; // Ensure this path is correct
 
 const KaloriePage = () => {
   const tabs = [
@@ -101,64 +101,54 @@ const KaloriePage = () => {
   );
 };
 
-const DummyContent = () => {
-  return (
-    <Image
-      src="/images/k-1.png"
-      alt="dummy image"
-      width="1000"
-      height="1000"
-      className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-    />
-  );
-};
+const DummyContent = () => (
+  <Image
+    src="/images/k-1.png"
+    alt="dummy image"
+    width="1000"
+    height="1000"
+    className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
+  />
+);
 
-const DummyContent1 = () => {
-  return (
-    <Image
-      src="/images/k-2.png"
-      alt="dummy image"
-      width="1000"
-      height="1000"
-      className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-    />
-  );
-};
+const DummyContent1 = () => (
+  <Image
+    src="/images/k-2.png"
+    alt="dummy image"
+    width="1000"
+    height="1000"
+    className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
+  />
+);
 
-const DummyContent2 = () => {
-  return (
-    <Image
-      src="/images/k-3.png"
-      alt="dummy image"
-      width="1000"
-      height="1000"
-      className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-    />
-  );
-};
+const DummyContent2 = () => (
+  <Image
+    src="/images/k-3.png"
+    alt="dummy image"
+    width="1000"
+    height="1000"
+    className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
+  />
+);
 
-const DummyContent3 = () => {
-  return (
-    <Image
-      src="/images/k-4.png"
-      alt="dummy image"
-      width="1000"
-      height="1000"
-      className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-    />
-  );
-};
+const DummyContent3 = () => (
+  <Image
+    src="/images/k-4.png"
+    alt="dummy image"
+    width="1000"
+    height="1000"
+    className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
+  />
+);
 
-const DummyContent4 = () => {
-  return (
-    <Image
-      src="/images/k-5.png"
-      alt="dummy image"
-      width="1000"
-      height="1000"
-      className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-    />
-  );
-};
+const DummyContent4 = () => (
+  <Image
+    src="/images/k-5.png"
+    alt="dummy image"
+    width="1000"
+    height="1000"
+    className="object-cover object-left-top h-[60%] md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
+  />
+);
 
 export default KaloriePage;
