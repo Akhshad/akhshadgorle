@@ -75,7 +75,7 @@ function Footer() {
           <h2 className="text-white text-lg font-semibold mb-4">Get in Touch</h2>
           <p>Nagpur, India</p>
           <p> 440002</p>
-          <p>Email: akhshadgorle@gmail.com</p>
+          <a href="mailto:akhshadgorle@gmail.com">Email: akhshadgorle@gmail.com</a>
           <p>Phone: (+91) 9595431234</p>
         </div>
         </div>

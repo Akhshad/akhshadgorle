@@ -1,0 +1,46 @@
+.swiperSlide {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    
+}
+
+.swiperSlide img {
+    border-radius: 3%;
+    border: none;
+    width: 100%; /* Make the image take up the full width of its container */
+    height: auto; /* Maintain the aspect ratio */
+    max-width: 1000px; /* Maximum width for larger screens */
+    
+}
+@media (min-width: 1024px) and (max-width: 1440px) {
+    .swiperSlideImg {
+        max-width: 1000px; /* Adjust the maximum width for laptop screens */
+        position: relative;
+        left: 12%;
+    }
+}
+
+@media (max-width: 1200px) {
+    .swiperSlide img {
+        max-width: 800px; /* Maximum width for medium screens */
+        
+        
+    }
+}
+
+@media (max-width: 768px) {
+    .swiperSlide img {
+        max-width: 600px; /* Maximum width for small screens */
+       
+    }
+}
+
+@media (max-width: 480px) {
+    .swiperSlide img {
+        max-width: 400px; /* Maximum width for extra small screens */
+       
+    }
+}
