@@ -1,5 +1,5 @@
 import React from 'react';
-import Swiper from "../components/ui/Swiper";
+import Swiper from "../components/ui/swiper";
 
 const Page = () => {
   return (
