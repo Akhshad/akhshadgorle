@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <motion.main variants={slideUp} initial="initial" animate="enter" className={styles.landing}>
       <Image
-        src="/images/AKG.jpg"
+        src="/images/Akg.jpg"
         fill={true}
         alt="background"
         priority={true} // Prioritize loading the background image
