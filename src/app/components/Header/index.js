@@ -37,18 +37,16 @@ export default function Header() {
 
   return (
     <>
-      <div ref={header} className={styles.header}>
-        {/* Add your desired header content here */}
-        {/* Example:
-          <div className={styles.logo}>
-            <p className={styles.copyright}>©</p>
-            <div className={styles.name}>
-              <p className={styles.codeBy}>Code by</p>
-              <p className={styles.Akhshad}>Akhshad</p>
-              <p className={styles.Gorle}>Gorle</p>
+     <div ref={header} className={styles.header}>
+            <div className={styles.logo}>
+                <p className={styles.copyright}>©</p>
+                <div className={styles.name}>
+                    <p className={styles.codeBy}>Code by</p>
+                    <p className={styles.dennis}>Akhshad</p>
+                    <p className={styles.snellenberg}>Gorle</p>
+                </div>
             </div>
-          </div>
-        */}
+        
         <div className={styles.nav}>
           <Magnetic>
             <div className={styles.el}>
@@ -71,13 +69,13 @@ export default function Header() {
         </div>
       </div>
       <div ref={button} className={styles.headerButtonContainer}>
-        <Rounded onClick={() => setIsActive(!isActive)} className={`${styles.button}`}>
-          <div className={`${styles.burger} ${isActive ? styles.burgerActive : ""}`}></div>
-        </Rounded>
-      </div>
-      <AnimatePresence mode="wait">
-        {isActive && <Nav />}
-      </AnimatePresence>
-    </>
+            <Rounded onClick={() => {setIsActive(!isActive)}} className={`${styles.button}`}>
+                <div className={`${styles.burger} ${isActive ? styles.burgerActive : ""}`}></div>
+            </Rounded>
+        </div>
+        <AnimatePresence mode="wait">
+            {isActive && <Nav />}
+        </AnimatePresence>
+        </>
   );
 }

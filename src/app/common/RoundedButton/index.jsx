@@ -4,7 +4,7 @@ import styles from './style.module.scss';
 import gsap from 'gsap';
 import Magnetic from '../Magnetic';
 
-export default function AnimatedButton({ children, backgroundColor = "#455CE9", ...attributes }) {
+export default function AnimatedButton({ children, backgroundColor = "#055CE9", ...attributes }) {
   const circle = useRef(null);
   let timeline = useRef(null);
   let timeoutId = null;

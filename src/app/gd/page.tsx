@@ -35,7 +35,7 @@ function Gd() {
         Projects
       </h3>
 
-      <div className="flex gap-10 align-center justify-center flex-col lg:flex-row">
+      <div className="flex gap-7 align-center justify-center flex-col lg:flex-row">
     <CardContainer className="inter-var">
       <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-white/[0.4] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-xl p-6 border  ">
         <CardItem
@@ -61,15 +61,6 @@ function Gd() {
           />
         </CardItem>
         <div className="flex justify-between items-center mt-20">
-          {/* <CardItem
-            translateZ={20}
-            as={Link}
-            href="https://twitter.com/mannupaaji"
-            target="__blank"
-            className="px-4 py-2 rounded-xl text-xs font-normal dark:text-white"
-          >
-            Try now →
-          </CardItem> */}
           <CardItem
             translateZ={20}
             as={Link}
@@ -107,15 +98,6 @@ function Gd() {
           />
         </CardItem>
         <div className="flex justify-between items-center mt-20">
-          {/* <CardItem
-            translateZ={20}
-            as={Link}
-            href="https://twitter.com/mannupaaji"
-            target="__blank"
-            className="px-4 py-2 rounded-xl text-xs font-normal dark:text-white"
-          >
-            Try now →
-          </CardItem> */}
           <CardItem
             translateZ={20}
             as={Link}
@@ -153,15 +135,6 @@ function Gd() {
           />
         </CardItem>
         <div className="flex justify-between items-center mt-20">
-          {/* <CardItem
-            translateZ={20}
-            as={Link}
-            href="https://twitter.com/mannupaaji"
-            target="__blank"
-            className="px-4 py-2 rounded-xl text-xs font-normal dark:text-white"
-          >
-            Try now →
-          </CardItem> */}
           <CardItem
             translateZ={20}
             as={Link}
@@ -175,7 +148,7 @@ function Gd() {
     </CardContainer>
     </div>
 
-    <div className="flex gap-10 align-center justify-center flex-col lg:flex-row">
+    <div className="flex gap-20 align-center justify-center flex-col lg:flex-row">
     <CardContainer className="inter-var">
       <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-pink-700 dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-xl p-6 border  ">
         <CardItem
@@ -193,7 +166,7 @@ function Gd() {
         </CardItem>
         <CardItem translateZ="100" className="w-full mt-4">
           <Image
-            src="/images/k-1.png"
+            src="/images/k1.png"
             height="1920"
             width="1080"
             className="h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl"

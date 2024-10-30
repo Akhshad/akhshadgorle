@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import style from './swiper.module.css';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Pagination } from 'swiper/modules';
+import { Pagination, Autoplay } from 'swiper/modules';
 
 const Sliding = () => {
   return (
@@ -12,9 +12,13 @@ const Sliding = () => {
       pagination={{
         dynamicBullets: true,
       }}
-      modules={[Pagination]}
+      modules={[Pagination, Autoplay]} // Include Autoplay module
+      autoplay={{
+        delay: 2000, // Delay between slides in milliseconds
+        disableOnInteraction: false, // Autoplay continues after user interaction
+      }}
       className="mySwiper"
-       centeredSlides={true} 
+      centeredSlides={true}
     >
       <SwiperSlide className={style.swiperSlide}>
         <img

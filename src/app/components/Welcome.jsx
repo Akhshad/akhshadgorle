@@ -1,8 +1,8 @@
 'use client';
 import { useRef, useEffect } from 'react';
 import styles from './page.module.css';
-
 export default function Home() {
+  
   const container = useRef(null);
   const stickyMask = useRef(null);
 
@@ -32,6 +32,7 @@ export default function Home() {
   }, [easing, initialMaskSize, targetMaskSize]);
 
   return (
+   
     <main className={styles.main}>
       <div ref={container} className={styles.container}>
         <div ref={stickyMask} className={styles.stickyMask}>
@@ -41,5 +42,6 @@ export default function Home() {
         </div>
       </div>
     </main>
+    
   );
 }

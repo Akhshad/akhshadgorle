@@ -8,6 +8,7 @@ import { AnimatePresence } from 'framer-motion';
 import Preloader from '../app/components/Preloader';
 import Landing from '../app/components/Landing';
 import Description from '../app/components/Description';
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);

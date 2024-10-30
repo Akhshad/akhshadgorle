@@ -19,7 +19,9 @@ function Navbar({ className }: { className?: string }) {
             setActive={setActive} active={active} item="Portfolio"
             >
                <div className="flex flex-col space-y-4 text-sm">
-               <HoveredLink href="/wd">Web Development</HoveredLink>
+            <HoveredLink href="/wd">
+            Web Development
+            </HoveredLink>
             <HoveredLink href="/ui-ux">
              UI/UX Design
             </HoveredLink>
