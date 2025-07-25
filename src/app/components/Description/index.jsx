@@ -29,18 +29,16 @@ export default function AnimatedDescription() {
           ))}
         </p>
         <motion.p variants={opacity} animate={isInView ? "open" : "closed"}>
-        Hi, I'm <span className='font-bold text-[#275BE1]'>Akhshad</span> blend pixels, code, and vibes to craft digital moments that just feel right.
+          Hi, I&apos;m <span className='font-bold text-[#275BE1]'>Akhshad</span> blend pixels, code, and vibes to craft digital moments that just feel right.
         </motion.p>
         <div data-scroll data-scroll-speed={0.1}>
           <Rounded className={styles.button}>
-            {/* <p>About Me</p> */}
             <Image 
               src="/images/A.jpg"
               fill
               alt="background"
             />
           </Rounded>
-           
         </div>
       </div>
     </div>

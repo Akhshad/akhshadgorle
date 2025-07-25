@@ -17,25 +17,26 @@ export const MaskContainer = ({
   className?: string;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [mousePosition, setMousePosition] = useState<any>({ x: null, y: null });
-  const containerRef = useRef<any>(null);
-  const updateMousePosition = (e: any) => {
+  const [mousePosition, setMousePosition] = useState<{ x: number | null; y: number | null }>({ x: null, y: null });
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const updateMousePosition = (e: MouseEvent) => {
+    if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     setMousePosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
 
   useEffect(() => {
-    containerRef.current.addEventListener("mousemove", updateMousePosition);
+    const node = containerRef.current;
+    if (!node) return;
+
+    node.addEventListener("mousemove", updateMousePosition);
     return () => {
-      if (containerRef.current) {
-        containerRef.current.removeEventListener(
-          "mousemove",
-          updateMousePosition
-        );
-      }
+      node.removeEventListener("mousemove", updateMousePosition);
     };
   }, []);
-  let maskSize = isHovered ? revealSize : size;
+
+  const maskSize = isHovered ? revealSize : size;
 
   return (
     <motion.div
@@ -48,8 +49,8 @@ export const MaskContainer = ({
       <motion.div
         className="w-full h-full flex items-center justify-center text-6xl absolute bg-yellow-300 bg-grid-white/[0.2] text-white [mask-image:url(/mask.svg)] [mask-size:40px] [mask-repeat:no-repeat]"
         animate={{
-          WebkitMaskPosition: `${mousePosition.x - maskSize / 2}px ${
-            mousePosition.y - maskSize / 2
+          WebkitMaskPosition: `${mousePosition.x !== null ? mousePosition.x - maskSize / 2 : 0}px ${
+            mousePosition.y !== null ? mousePosition.y - maskSize / 2 : 0
           }px`,
           WebkitMaskSize: `${maskSize}px`,
         }}
@@ -57,18 +58,14 @@ export const MaskContainer = ({
       >
         <div className="absolute inset-0 bg-black h-full w-full z-0 opacity-0" />
         <div
-          onMouseEnter={() => {
-            setIsHovered(true);
-          }}
-          onMouseLeave={() => {
-            setIsHovered(false);
-          }}
-          className="max-w-4xl mx-auto text-center text-white  text-4xl font-bold relative z-20"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className="max-w-4xl mx-auto text-center text-white text-4xl font-bold relative z-20"
         >
           {children}
         </div>
       </motion.div>
-          
+
       <div className="w-full h-full flex items-center justify-center text-white">
         {revealText}
       </div>
