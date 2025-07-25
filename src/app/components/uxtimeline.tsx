@@ -76,72 +76,78 @@ export function TimelineDemo() {
         </div>
       ),
     },
-    // ✅ Only showing relevant parts that were changed:
-
-{
-  title: "Persona",
-  content: (
-    <div>
-      <p className="text-neutral-200 text-xs md:text-sm font-normal mb-4">
-        A representation of the target audience so that designers are designing
-        for a specific audience instead of a generic one.
-      </p>
-      <div className="grid grid-cols-1 gap-4">
-        <Image
-          src="/images/Persona.png"
-          alt="startup template"
-          width={1000}
-          height={500}
-          className="rounded-lg object-contain w-full h-auto 
-          shadow-[...]"
-        />
-      </div>
-    </div>
-  ),
-},
-{
-  title: "Empathy Map",
-  content: (
-    <div>
-      <p className="text-neutral-200 text-xs md:text-sm font-normal mb-4">
-        A representation of the target audience so that designers are designing
-        for a specific audience instead of a generic one.
-      </p>
-      <div className="grid grid-cols-1 gap-4">
-        <Image
-          src="/images/Empathy_Map.png"
-          alt="startup template"
-          width={1000}
-          height={500}
-          className="rounded-lg object-contain w-full h-auto 
-          shadow-[...]"
-        />
-      </div>
-    </div>
-  ),
-},
-{
-  title: "Journey Map",
-  content: (
-    <div>
-      <p className="text-neutral-200 text-xs md:text-sm font-normal mb-4">
-        A visual tool used to understand a user&apos;s thoughts, feelings, behaviors, and challenges,
-        helping designers create human-centered solutions based on real user insights rather than assumptions.
-      </p>
-      <div className="grid grid-cols-1 gap-4">
-        <Image
-          src="/images/Journey_Map.png"
-          alt="startup template"
-          width={1000}
-          height={500}
-          className="rounded-lg object-contain w-full h-auto 
-          shadow-[...]"
-        />
-      </div>
-    </div>
-  ),
-},
-
+    {
+      title: "Persona",
+      content: (
+        <div>
+          <p className="text-neutral-200 text-xs md:text-sm font-normal mb-4">
+          a representation of the target audience so that the designer are designing
+           for a specific audience instead of a generic one
+          </p>
+         
+          <div className="grid grid-cols-1 gap-4">
+            <Image
+               src="/images/Persona.png"
+               alt="startup template"
+               width={1000}
+               height={500}
+               className="rounded-lg object-contain w-full h-auto 
+               shadow-[0_0_24px_rgba(34,_42,_53,_0.06),
+               _0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),
+               _0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05)
+               ,_0_1px_0_rgba(255,_255,_255,_0.1)_inset]"/>    
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Empathy Map",
+      content: (
+        <div>
+          <p className="text-neutral-200 text-xs md:text-sm font-normal mb-4">
+          a representation of the target audience so that the designer are designing
+           for a specific audience instead of a generic one
+          </p>
+         
+          <div className="grid grid-cols-1 gap-4">
+            <Image
+               src="/images/Empathy_Map.png"
+               alt="startup template"
+               width={1000}
+               height={500}
+               className="rounded-lg object-contain w-full h-auto 
+               shadow-[0_0_24px_rgba(34,_42,_53,_0.06),
+               _0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),
+               _0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05)
+               ,_0_1px_0_rgba(255,_255,_255,_0.1)_inset]"/>    
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Journey Map",
+      content: (
+        <div>
+          <p className="text-neutral-200 text-xs md:text-sm font-normal mb-4">
+          A visual tool used to understand a user's thoughts, feelings, behaviors, and challenges, helping designers create
+           human-centered solutions based on real user insights rather than assumptions.
+          </p>
+         
+          <div className="grid grid-cols-1 gap-4">
+            <Image
+               src="/images/Journey_Map.png"
+               alt="startup template"
+               width={1000}
+               height={500}
+               className="rounded-lg object-contain w-full h-auto 
+               shadow-[0_0_24px_rgba(34,_42,_53,_0.06),
+               _0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),
+               _0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05)
+               ,_0_1px_0_rgba(255,_255,_255,_0.1)_inset]"/>    
+          </div>
+        </div>
+      ),
+    },
     {
       title: "Task Flow",
       content: (
