@@ -122,7 +122,7 @@ export const CardItem = ({
 
   useEffect(() => {
     handleAnimations();
-  }, [isMouseEntered]);
+  }, [isMouseEntered]); // Removed handleAnimations from dependencies
 
   const handleAnimations = () => {
     if (!ref.current) return;

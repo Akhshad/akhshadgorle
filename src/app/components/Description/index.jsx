@@ -3,10 +3,11 @@ import { useInView, motion } from 'framer-motion';
 import { useRef } from 'react';
 import { slideUp, opacity } from './animation';
 import Rounded from '../../common/RoundedButton';
+import Image from 'next/image'; 
 
 export default function AnimatedDescription() {
   const phrase =
-    "Helping brands to stand out in the digital era. Together we will set the new status quo. No nonsense, always on the cutting edge.";
+    "Bringing brands to life with design that speaks, resonates, and truly connects. Because great design isn’t just seen-it’s felt.";
   const description = useRef(null);
   const isInView = useInView(description);
 
@@ -28,12 +29,18 @@ export default function AnimatedDescription() {
           ))}
         </p>
         <motion.p variants={opacity} animate={isInView ? "open" : "closed"}>
-          The combination of my passion for design, code & interaction positions me in a unique place in the web design world.
+        Hi, I'm <span className='font-bold text-[#275BE1]'>Akhshad</span> blend pixels, code, and vibes to craft digital moments that just feel right.
         </motion.p>
         <div data-scroll data-scroll-speed={0.1}>
           <Rounded className={styles.button}>
-            <p>About me</p>
+            {/* <p>About Me</p> */}
+            <Image 
+              src="/images/A.jpg"
+              fill
+              alt="background"
+            />
           </Rounded>
+           
         </div>
       </div>
     </div>

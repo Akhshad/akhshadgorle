@@ -27,4 +27,4 @@ const Sliding = () => {
   );
 };
 
-export default Sliding;
+export default Sliding; 

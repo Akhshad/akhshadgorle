@@ -9,7 +9,7 @@ export default function Home() {
   const initialMaskSize = 0.8;
   const targetMaskSize = 150;
   const easing = 0.15;
-  let easedScrollProgress = 0;
+  const easedScrollProgress = useRef(0); // Use useRef to preserve value across renders
 
   useEffect(() => {
     const animate = () => {
@@ -23,13 +23,13 @@ export default function Home() {
       if (!stickyMask.current || !container.current) return 0;
       const scrollProgress =
         stickyMask.current.offsetTop / (container.current.getBoundingClientRect().height - window.innerHeight);
-      const delta = scrollProgress - easedScrollProgress;
-      easedScrollProgress += delta * easing;
-      return easedScrollProgress;
+      const delta = scrollProgress - easedScrollProgress.current; // Access current value
+      easedScrollProgress.current += delta * easing; // Update current value
+      return easedScrollProgress.current;
     };
 
     requestAnimationFrame(animate);
-  }, [easing, initialMaskSize, targetMaskSize]);
+  }, [easing, initialMaskSize, targetMaskSize, container]); // Added container to dependencies
 
   return (
    

@@ -5,7 +5,7 @@ function Footer() {
         <div> 
           <h2 className="text-white text-lg font-semibold mb-4">About</h2>
           <p className="mb-4">
-          DZ!NR & Developer by trade. I create visually stunning graphics
+          Designer & Developer by trade. I create visually stunning graphics
            and translate them into user-friendly interfaces and websites.
           Basically, I bridge the gap between beautiful design and smooth functionality.
           </p>
@@ -27,7 +27,7 @@ function Footer() {
                 href="/wd"
                 className="hover:text-white transition-colors duration-300"
               >
-             Web Developmnet
+             Web Development
               </a>
             </li>
             <li>
@@ -44,6 +44,22 @@ function Footer() {
                 className="hover:text-white transition-colors duration-300"
               >
                 Graphic Design
+              </a>
+            </li>
+            <li>
+              <a
+                href="/case_study"
+                className="hover:text-white transition-colors duration-300"
+              >
+               Case Study
+              </a>
+            </li>
+            <li>
+              <a
+                href="/ios_ui"
+                className="hover:text-white transition-colors duration-300"
+              >
+               Ios Ui
               </a>
             </li>
           </ul>
@@ -73,10 +89,10 @@ function Footer() {
         </div>
         <div>
           <h2 className="text-white text-lg font-semibold mb-4">Get in Touch</h2>
-          <p>Nagpur, India</p>
-          <p> 440002</p>
+          {/* <p>Nagpur, India</p>
+          <p> 440002</p> */}
           <a href="mailto:akhshadgorle@gmail.com">Email: akhshadgorle@gmail.com</a>
-          <p>Phone: (+91) 9595431234</p>
+
         </div>
         </div>
         <p className="text-center text-sm pt-8">© 2024  All rights Reserved.</p>

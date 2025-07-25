@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { opacity, slideUp } from './anim';
 
-const words = ["नमस्ते","Hello", "Bonjour", "Ciao", "Olà",  "Hallå", "Guten tag", "Hallo"]
+const words = ["नमस्ते","खम्मा घणी","Hello", "Bonjour", "Ciao", "Olà", "Hallå", "Guten tag", "Hallo"]
 
 export default function Index() {
     const [index, setIndex] = useState(0);

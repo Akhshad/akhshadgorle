@@ -13,16 +13,12 @@ const Sliding = () => {
         dynamicBullets: true,
       }}
       modules={[Pagination]}
-      className="mySwiper"
-       centeredSlides={true} 
+      className={style.mySwiper}
+      centeredSlides={true}
     >
       <SwiperSlide className={style.swiperSlide}>
-        <img
-          src="images/fp.png" alt="one"
-         
-        />
+        <img src="images/fp.png" alt="one" />
       </SwiperSlide>
-
     </Swiper>
   );
 };

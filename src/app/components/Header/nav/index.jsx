@@ -24,6 +24,14 @@ const navItems = [
     title: "Graphic Design",
     href: "/gd",
   },
+  {
+    title: "Case Study",
+    href: "/case_study",
+  },
+  {
+    title: "Ios Ui",
+    href: "/ios_ui",
+  },
  
 ];
 
