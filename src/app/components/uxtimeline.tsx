@@ -129,7 +129,7 @@ export function TimelineDemo() {
       content: (
         <div>
           <p className="text-neutral-200 text-xs md:text-sm font-normal mb-4">
-          A visual tool used to understand a user's thoughts, feelings, behaviors, and challenges, helping designers create
+          A visual tool used to understand a user&apos;s thoughts, feelings, behaviors, and challenges, helping designers create
            human-centered solutions based on real user insights rather than assumptions.
           </p>
          
@@ -153,7 +153,7 @@ export function TimelineDemo() {
       content: (
         <div>
           <p className="text-neutral-200 text-xs md:text-sm font-normal mb-4">
-          A step-by-step visual representation of the user's actions to complete a specific goal, 
+          A step-by-step visual representation of the user&apos;s actions to complete a specific goal, 
           outlining key decisions, interactions, 
           and pathways to optimize efficiency and improve the overall user experience.
           </p>
@@ -178,7 +178,7 @@ export function TimelineDemo() {
       content: (
         <div>
           <p className="text-neutral-200 text-xs md:text-sm font-normal mb-4">
-          A visual representation of the user's journey through a system, mapping out various pathways, interactions,
+          A visual representation of the user&apos;s journey through a system, mapping out various pathways, interactions,
            and decision points to ensure a smooth and intuitive experience tailored to user needs.
           </p>
          
