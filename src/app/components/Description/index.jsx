@@ -3,7 +3,9 @@ import { useInView, motion } from 'framer-motion';
 import { useRef } from 'react';
 import { slideUp, opacity } from './animation';
 import Rounded from '../../common/RoundedButton';
-import Image from 'next/image'; 
+import Image from 'next/image';
+import SpotlightBackground from '../SpotlightBackground';
+import { useTextSpotlight } from '../SpotlightBackground/useTextSpotlight';
 
 export default function AnimatedDescription() {
   const phrase =
@@ -11,8 +13,12 @@ export default function AnimatedDescription() {
   const description = useRef(null);
   const isInView = useInView(description);
 
+  // Text near the cursor fades to grey as the spotlight passes over it.
+  useTextSpotlight(description, ':scope > div > p');
+
   return (
     <div ref={description} className={styles.description}>
+      <SpotlightBackground />
       <div className={styles.body}>
         <p>
           {phrase.split(" ").map((word, index) => (
@@ -34,7 +40,7 @@ export default function AnimatedDescription() {
         <div data-scroll data-scroll-speed={0.1}>
           <Rounded className={styles.button}>
             <Image 
-              src="/images/A.jpg"
+              src="/images/profile.jpg"
               fill
               alt="background"
             />

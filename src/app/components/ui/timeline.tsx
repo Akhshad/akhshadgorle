@@ -1,10 +1,5 @@
 "use client";
-import {
-  useMotionValueEvent,
-  useScroll,
-  useTransform,
-  motion,
-} from "motion/react";
+import { useMotionValue, useTransform, motion } from "motion/react";
 import React, { useEffect, useRef, useState } from "react";
 
 interface TimelineEntry {
@@ -17,20 +12,41 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
 
+  // The dots stick at top-40 (160px) and are 40px tall, so their centre sits
+  // 180px from the top of the viewport. The beam's tip should sit right there.
+  const DOT_CENTER = 180;
+  const heightTransform = useMotionValue(0);
+  const opacityTransform = useTransform(heightTransform, [0, 150], [0, 1]);
+
+  // Work out the beam's length from where the timeline actually is on screen
+  // right now. Images inside the entries load after first paint and make the
+  // timeline much taller, so anything measured once (or cached) goes stale.
+  const update = () => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    heightTransform.set(Math.min(Math.max(DOT_CENTER - rect.top, 0), rect.height));
+  };
+
   useEffect(() => {
-    if (ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      setHeight(rect.height);
-    }
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => {
+      setHeight(el.getBoundingClientRect().height);
+      update();
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start 10%", "end 90%"],
-  });
-
-  const heightTransform = useTransform(scrollYProgress, [0, 1], [0, height]);
-  const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
 
   return (
     <div className="w-full bg-neutral-950 md:px-10" ref={containerRef}>

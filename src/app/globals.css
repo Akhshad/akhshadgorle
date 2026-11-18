@@ -108,3 +108,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     @apply bg-background text-foreground;
   }
 }
+/* Phones: leave room at the bottom so the liquid-glass nav doesn't cover content */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  }
+}
