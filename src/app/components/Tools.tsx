@@ -29,7 +29,8 @@ const Tools = () => {
   useTextSpotlight(sectionRef, "[data-spotlight-text], .group\\/card span.z-20");
 
   return (
-    <div ref={sectionRef} className="h-[50rem] w-full bg-black relative items-center justify-center">
+    // Fixed height only on large screens; on phones the two cards stack and need more room.
+    <div ref={sectionRef} className="lg:h-[50rem] pb-24 lg:pb-0 w-full bg-black relative items-center justify-center">
       <SpotlightBackground />
 
       <p
@@ -43,8 +44,8 @@ const Tools = () => {
         {groups.map((group, i) => (
           <div
             key={group.title}
-            className={`border border-white/[0.2] mt-20 flex flex-col items-start max-w-sm mx-auto p-4 relative h-[30rem] ${
-              i === 0 ? "w-[40rem]" : ""
+            className={`border border-white/[0.2] mt-20 flex flex-col items-start w-[calc(100%-3rem)] max-w-sm mx-auto p-4 relative h-[30rem] ${
+              i === 0 ? "lg:w-[40rem]" : ""
             }`}
           >
             <Icon className="absolute h-6 w-6 -top-3 -left-3 text-white" />
@@ -55,7 +56,7 @@ const Tools = () => {
             <EvervaultCard text={group.title} />
 
             {group.rows.map((row, r) => (
-              <div key={r} className="flex gap-2">
+              <div key={r} className="flex flex-wrap gap-2">
                 {row.map((tool) => (
                   <p
                     key={tool}

@@ -21,7 +21,7 @@ const blogs: Blog[] = [
     id: 1,
     title: 'How We Designed a Hassle-Free Pet Care Experience?',
     author: 'Woofy`s Case Study',
-    date: '12.10.1999',
+    date: '12.10.2024',
     image: '/images/Truck.png', // Local image path
     avatar: '/images/profile.jpg', // Local avatar path
     link: '/case_study',
@@ -39,7 +39,7 @@ const blogs: Blog[] = [
     id: 3,
     title: 'From ‘Could this be more Confusing?’ to an Effortlessly Intuitive UI.',
     author: 'Woofy`s Ui',
-    date: '18.03.2021',
+    date: '18.03.2025',
     image: '/images/Woofys-Ui.png',// Local image path
     avatar: '/images/profile.jpg',// Local avatar path
     link: '/ios_ui',
@@ -83,12 +83,13 @@ export default function SolidBento() {
        <p data-spotlight-text className="d text-4xl sm:text-7xl text-center font-bold relative  bg-clip-text text-transparent bg-gradient-to-b from-neutral-100 to-neutral-800 py-8">
        Design. Develop. Elevate!
       </p>
-    <div className="relative grid max-h-screen h-auto p-4 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-3 gap-4">
+    {/* Height is only capped on large screens; on phones the cards stack and need the room. */}
+    <div className="relative grid lg:max-h-screen h-auto p-4 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-3 gap-4">
       {blogs.map((blog, index) => (
         <Link
           key={blog.id}
           href={blog.link}
-          className={`group relative flex overflow-hidden rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
+          className={`group relative flex min-h-[16rem] lg:min-h-0 overflow-hidden rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
             index === 0
               ? 'md:col-span-2 md:row-span-2'
               : index === 1
