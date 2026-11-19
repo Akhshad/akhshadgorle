@@ -2,7 +2,9 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import SpotlightBackground from './SpotlightBackground'
+import { useTextSpotlight } from './SpotlightBackground/useTextSpotlight'
 
 interface Blog {
   id: number
@@ -21,7 +23,7 @@ const blogs: Blog[] = [
     author: 'Woofy`s Case Study',
     date: '12.10.1999',
     image: '/images/Truck.png', // Local image path
-    avatar: '/images/A.jpg', // Local avatar path
+    avatar: '/images/profile.jpg', // Local avatar path
     link: '/case_study',
   },
   {
@@ -30,7 +32,7 @@ const blogs: Blog[] = [
     author: 'Web Development  ',
     date: '05.07.2023',
     image: '/images/WebD.png', // Local image path
-    avatar: '/images/A.jpg', // Local avatar path
+    avatar: '/images/profile.jpg', // Local avatar path
     link: '/wd',
   },
   {
@@ -39,7 +41,7 @@ const blogs: Blog[] = [
     author: 'Woofy`s Ui',
     date: '18.03.2021',
     image: '/images/Woofys-Ui.png',// Local image path
-    avatar: '/images/A.jpg',// Local avatar path
+    avatar: '/images/profile.jpg',// Local avatar path
     link: '/ios_ui',
   },
   {
@@ -48,7 +50,7 @@ const blogs: Blog[] = [
     author: 'Graphic Design',
     date: '24.12.2022',
     image: '/Frame.png', // Local image path
-    avatar: '/images/A.jpg', // Local avatar path
+    avatar: '/images/profile.jpg', // Local avatar path
     link: '/gd',
   },
   {
@@ -57,26 +59,31 @@ const blogs: Blog[] = [
     author: 'UX/UI Design',
     date: '02.11.2024',
     image: '/images/M.png', // Local image path
-    avatar: '/images/A.jpg', // Local avatar path
+    avatar: '/images/profile.jpg', // Local avatar path
     link: '/ui-ux',
   },
 ]
 
 export default function SolidBento() {
   const [mounted, setMounted] = useState(false)
+  const sectionRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
+  // Text near the cursor fades to grey as the spotlight passes over it.
+  useTextSpotlight(sectionRef, '[data-spotlight-text]', 150, mounted)
+
   if (!mounted) return null
 
   return (
-    <div>
-       <p className="d text-4xl sm:text-7xl text-center font-bold relative  bg-clip-text text-transparent bg-gradient-to-b from-neutral-100 to-neutral-800 py-8">
+    <div ref={sectionRef} className="relative">
+      <SpotlightBackground />
+       <p data-spotlight-text className="d text-4xl sm:text-7xl text-center font-bold relative  bg-clip-text text-transparent bg-gradient-to-b from-neutral-100 to-neutral-800 py-8">
        Design. Develop. Elevate!
-      </p> 
-    <div className="grid max-h-screen h-auto p-4 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-3 gap-4">
+      </p>
+    <div className="relative grid max-h-screen h-auto p-4 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-3 gap-4">
       {blogs.map((blog, index) => (
         <Link
           key={blog.id}
@@ -97,7 +104,7 @@ export default function SolidBento() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
           <div className="relative flex h-full w-full flex-col justify-end p-6 text-white">
-            <h2 className="mb-2 text-2xl font-bold leading-tight">{blog.title}</h2>
+            <h2 data-spotlight-text className="mb-2 text-2xl font-bold leading-tight">{blog.title}</h2>
             <div className="flex items-center space-x-2">
               <Image
                 src={blog.avatar}
@@ -106,8 +113,8 @@ export default function SolidBento() {
                 height={32}
                 className="rounded-full"
               />
-              <span className="text-sm font-medium">{blog.author}</span>
-              <span className="text-xs text-gray-300">{blog.date}</span>
+              <span data-spotlight-text className="text-sm font-medium">{blog.author}</span>
+              <span data-spotlight-text className="text-xs text-gray-300">{blog.date}</span>
             </div>
           </div>
         </Link>

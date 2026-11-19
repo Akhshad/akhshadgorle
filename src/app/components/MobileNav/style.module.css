@@ -1,0 +1,134 @@
+/* Liquid-glass bottom navigation, phones only. */
+.wrap {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .wrap {
+    display: block;
+    position: fixed;
+    left: 12px;
+    /* leave room on the right for the mini turntable music player */
+    right: calc(12px + 66px + 8px);
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    z-index: 70; /* above the slide-out menu (60), below the preloader (99) */
+  }
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  height: 60px;
+  padding: 5px;
+  border-radius: 999px;
+  isolation: isolate;
+  overflow: hidden;
+
+  /* Apple-style liquid glass: mostly clear, the background bends through it
+     (SVG refraction filter, Chromium only) and light catches the rim. */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(255, 255, 255, 0.07) 100%
+  );
+  /* Safari / fallback: clear frosted glass */
+  -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(1.06);
+  backdrop-filter: blur(10px) saturate(180%) brightness(1.06);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    /* bright rim along the top edge and a softer one along the bottom */
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0.5px rgba(255, 255, 255, 0.18),
+    /* thickness: light bouncing inside the glass edges */
+    inset 2px 2px 6px -2px rgba(255, 255, 255, 0.35),
+    inset -2px -2px 6px -2px rgba(255, 255, 255, 0.15),
+    inset 0 0 20px rgba(255, 255, 255, 0.04),
+    0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* Chromium (Chrome, Brave, Edge) can bend the background through an SVG filter.
+   MobileNav sets data-liquid-glass on <html> only in those browsers. */
+:global(html[data-liquid-glass]) .bar {
+  backdrop-filter: url(#liquid-glass-refract) blur(1.5px) saturate(180%) brightness(1.08);
+}
+
+/* specular highlight sweeping across the top-right, like light on curved glass */
+.bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 70% at 85% -10%, rgba(255, 255, 255, 0.35), transparent 55%),
+    radial-gradient(80% 60% at 10% 120%, rgba(255, 255, 255, 0.12), transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.item {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font: inherit;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 999px;
+  transition: color 0.2s ease;
+}
+.item:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: -2px;
+}
+.item svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.7;
+}
+.active {
+  color: #fff;
+}
+.label {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* the lighter glass bubble that slides to the current tab */
+.bubble {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0.5px rgba(255, 255, 255, 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* hidden SVG that holds the refraction filter */
+.defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}

@@ -1,7 +1,11 @@
 .description{
+    position: relative; /* for the spotlight background layer */
     padding-left: 200px;
     padding-right: 200px;
-    margin-top: 200px;
+    /* was margin-top: 200px; padding keeps the same spacing but lets the
+       spotlight background cover the whole dark band */
+    padding-top: 200px;
+    padding-bottom: 120px;
     display: flex;
     justify-content: center;
     .body{
@@ -9,6 +13,7 @@
         display: flex;
         gap: 50px;
         position: relative;
+        z-index: 1;
         p{
             margin: 0px;
             &:nth-of-type(1){

@@ -49,9 +49,14 @@ export default function Home() {
 
   return (
     <motion.main variants={slideUp} initial="initial" animate="enter" className={styles.landing}>
-      <video autoPlay muted loop>
-        <source src="/images/lander.mp4" type="video/mp4" />
-      </video>
+      <Image
+        src="/images/hero.webp"
+        alt="Akhshad balancing on one leg on a boulder in a mountain meadow"
+        fill
+        priority
+        sizes="100vw"
+        style={{ objectFit: 'cover', objectPosition: 'center 40%' }}
+      />
       <div className={styles.sliderContainer}>
         <div ref={slider} className={styles.slider}>
           <p ref={firstText}>Freelance UI/UX Designer -</p>

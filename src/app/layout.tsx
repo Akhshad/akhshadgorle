@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import Header from './components/Header';
+import MusicPlayer from './components/MusicPlayer';
+import MobileNav from './components/MobileNav';
 import Head from 'next/head'; 
 import Image from "next/image"
 import { Analytics } from "@vercel/analytics/react";
@@ -28,6 +30,8 @@ export default function RootLayout({
        <body className={bricolage.className}>
         <Header />
         {children}
+        <MobileNav />
+        <MusicPlayer />
         <Analytics/>
         <SpeedInsights/>
       </body>
