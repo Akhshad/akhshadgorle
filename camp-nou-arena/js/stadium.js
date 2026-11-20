@@ -266,15 +266,15 @@ function armchairGeometry() {
 
 // Hospitality skyboxes, one per stand, in the VIP ring above the lower tier.
 function buildSkyboxes(group) {
-  const numbers = [6, 24, 12, 18];
   const boxes = [];
+  const OFFSETS = [-0.13, 0, 0.13]; // three suites per stand, centred on the halfway line
   const chairs = [];
   const wallMat = new THREE.MeshStandardMaterial({ color: 0x2b2f38, roughness: 0.8 });
   const floorMat = new THREE.MeshStandardMaterial({ color: 0x3a3330, roughness: 0.7 });
-  for (let s = 0; s < 4; s++) {
-    const tc = standCenterAngle(s);
+  for (let s = 0; s < 4; s++) for (const off of OFFSETS) {
+    const tc = standCenterAngle(s) + off;
     const f = frameAt(tc, (RING.glassD + RING.backD) / 2, RING.floor);
-    const box = { stand: s, number: numbers[s], seats: [] };
+    const box = { id: boxes.length, stand: s, number: boxes.length + 1, t: tc, central: off === 0, seats: [], booked: false };
     // side walls
     for (const side of [-1, 1]) {
       const w = new THREE.Mesh(new THREE.BoxGeometry(0.15, RING.ceil - RING.floor, RING.backD - RING.glassD), wallMat);

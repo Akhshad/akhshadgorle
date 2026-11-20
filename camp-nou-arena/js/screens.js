@@ -93,7 +93,7 @@ export class Screens {
 
     // portrait screens on the VIP ring, two per stand
     for (let s = 0; s < 4; s++) {
-      for (const off of [-0.17, 0.17]) {
+      for (const off of [-0.3, 0.3]) {
         const f = frameAt(standCenterAngle(s) + off, RING.glassD - 0.6, 13.7);
         const back = new THREE.Mesh(new THREE.BoxGeometry(2.0, 3.45, 0.18), frameMat);
         back.position.copy(f.pos).addScaledVector(f.n, -0.1);

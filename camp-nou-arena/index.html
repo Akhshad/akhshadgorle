@@ -39,6 +39,14 @@
         <i class="dot"></i><b id="live-count">14 screens</b><span id="live-sub"></span>
       </div>
       <div class="tr-buttons">
+        <button id="vip" class="panel btn vip-btn" aria-label="VIP suites">
+          <svg viewBox="0 0 24 24"><path d="M3 8l4.5 3.5L12 5l4.5 6.5L21 8l-2 10H5z" fill="currentColor"/></svg>
+          <span>VIP suites</span>
+        </button>
+        <button id="music" class="panel btn" aria-pressed="false" aria-label="Music">
+          <svg viewBox="0 0 24 24"><path d="M9 17.5V6l11-2.5v11.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="6.5" cy="17.5" r="2.7" fill="currentColor"/><circle cx="17.5" cy="15" r="2.7" fill="currentColor"/></svg>
+          <span id="music-label">Music off</span>
+        </button>
         <button id="sound" class="panel btn" aria-pressed="false">
           <svg viewBox="0 0 24 24" class="ic-off"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M17 9l5 5M22 9l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           <svg viewBox="0 0 24 24" class="ic-on"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -102,6 +110,42 @@
 
     <div id="hint" class="hint"></div>
     <div id="credits">Procedural model inspired by Spotify Camp Nou · fan-made demo, not affiliated with FC Barcelona or Spotify · Sky &amp; rendering: three.js</div>
+
+    <aside id="suites" class="suites hidden" aria-label="VIP suites">
+      <div class="s-head">
+        <div><small>Hospitality</small><strong>VIP suites</strong></div>
+        <button id="suites-close" class="icon-btn plain" aria-label="Close">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <p class="s-note">Private glass boxes above the lower tier: leather armchairs, catering and the best view of the pitch.</p>
+      <div id="suites-list" class="s-list"></div>
+    </aside>
+
+    <div id="book" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="m-card">
+        <div class="m-head">
+          <div class="logo small" aria-hidden="true"></div>
+          <div><small id="b-kicker"></small><strong id="b-title"></strong></div>
+        </div>
+        <ul class="b-perks">
+          <li>Leather armchairs with a private glass front</li>
+          <li>Food, drinks and a dedicated host</li>
+          <li>VIP entrance and parking</li>
+        </ul>
+        <div class="b-row">
+          <span>Guests</span>
+          <div class="stepper">
+            <button id="b-minus" aria-label="Fewer guests">−</button>
+            <b id="b-guests">6</b>
+            <button id="b-plus" aria-label="More guests">+</button>
+          </div>
+        </div>
+        <div class="b-row total"><span id="b-each"></span><b id="b-total"></b></div>
+        <button id="b-confirm" class="primary">Book suite</button>
+        <button id="b-cancel" class="link">Cancel</button>
+      </div>
+    </div>
 
     <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
       <div class="m-card">

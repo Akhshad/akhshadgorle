@@ -117,6 +117,39 @@ body.phone .chip-tap { display: flex !important; }
 .hint { position: absolute; left: 50%; bottom: calc(22px + var(--sab)); transform: translateX(-50%); background: rgba(16,20,30,0.78); color: #fff; padding: 10px 20px; border-radius: 99px; font-size: 15px; font-weight: 500; white-space: nowrap; max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis; }
 #credits { position: absolute; right: calc(14px + var(--sar)); bottom: 4px; font-size: 11px; color: rgba(255,255,255,0.85); text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
 
+/* VIP suites panel */
+.vip-btn { background: linear-gradient(135deg, #1b3d97, #a50044) !important; color: #fff; box-shadow: 0 10px 30px rgba(10,14,30,0.25); }
+#music[aria-pressed="true"] { color: var(--garnet); }
+.suites { position: absolute; top: calc(150px + var(--sat)); right: calc(16px + var(--sar)); bottom: calc(80px + var(--sab)); width: 360px; background: #fff; border-radius: 22px; box-shadow: 0 24px 60px rgba(10,14,30,0.3); display: flex; flex-direction: column; overflow: hidden; animation: slidein .35s cubic-bezier(.2,.9,.3,1.1); }
+@keyframes slidein { from { opacity: 0; transform: translateX(24px); } }
+.s-head { display: flex; justify-content: space-between; align-items: center; padding: 18px 18px 4px 22px; }
+.s-head small { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.s-head strong { font-size: 24px; font-weight: 800; }
+.icon-btn.plain { background: #f1f2f5; border-radius: 50%; width: 40px; height: 40px; display: grid; place-items: center; }
+.icon-btn.plain svg { width: 18px; height: 18px; }
+.s-note { margin: 4px 22px 10px; font-size: 14px; color: var(--muted); line-height: 1.4; }
+.s-list { overflow-y: auto; padding: 4px 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+.s-group { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; padding: 10px 10px 2px; }
+.s-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; text-align: left; width: 100%; transition: background .15s; }
+.s-item:hover { background: #f4f5f8; }
+.s-item .s-num { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #1b3d97, #a50044); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 17px; flex: none; }
+.s-item .s-mid { flex: 1; min-width: 0; }
+.s-item .s-mid b { display: block; font-size: 16px; }
+.s-item .s-mid span { font-size: 13px; color: var(--muted); }
+.s-item .s-state { font-size: 13px; font-weight: 700; color: var(--green); white-space: nowrap; }
+.s-item.booked { opacity: .55; cursor: not-allowed; }
+.s-item.booked .s-num { background: #9aa0ab; }
+.s-item.booked .s-state { color: var(--muted); }
+
+.b-perks { margin: 0; padding: 0 0 0 18px; width: 100%; font-size: 14px; color: #3a3f4c; line-height: 1.7; }
+.b-row { display: flex; justify-content: space-between; align-items: center; width: 100%; font-weight: 600; }
+.b-row.total { border-top: 1px solid var(--line); padding-top: 12px; }
+.b-row.total span { color: var(--muted); font-weight: 500; font-size: 14px; }
+.b-row.total b { font-size: 26px; color: var(--accent); font-weight: 800; }
+.stepper { display: flex; align-items: center; gap: 14px; }
+.stepper button { width: 40px; height: 40px; border-radius: 50%; background: #f1f2f5; font-size: 22px; font-weight: 700; line-height: 1; }
+.stepper b { font-size: 22px; min-width: 26px; text-align: center; }
+
 /* confirmation */
 .modal { position: absolute; inset: 0; background: rgba(8,12,24,0.55); display: grid; place-items: center; padding: 16px; animation: fade .3s; }
 @keyframes fade { from { opacity: 0; } }
@@ -188,6 +221,7 @@ body.phone .actions { bottom: calc(66px + var(--sab)); width: calc(100vw - 20px)
 body.phone .actions button { flex: 1; }
 body.phone .hint { font-size: 13px; bottom: calc(14px + var(--sab)); padding: 9px 16px; }
 body.phone #credits { display: none; }
+body.phone .suites { top: auto; left: 10px; right: 10px; bottom: calc(10px + var(--sab)); width: auto; max-height: 72vh; }
 
 @media (orientation: landscape) and (max-height: 520px) {
   body.phone .crumbs-row { top: calc(10px + var(--sat)); left: auto; right: calc(72px + var(--sar)); max-width: 50vw; }

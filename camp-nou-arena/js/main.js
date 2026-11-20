@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { SITE, STANDS, MODEL } from './config.js';
+import { SITE, STANDS, MODEL, VIP, MUSIC } from './config.js';
 import { detectDevice } from './device.js';
 import { TIERS, SECTORS, locate, tierAt, sectorOf, standOfSector, standCenterAngle, standStats, buildSeats } from './layout.js';
 import { installColourGrade, buildSky, buildEnvironment, buildSun, setShadowFocus, buildGround } from './world.js';
@@ -8,6 +8,7 @@ import { buildStadium, frameAt } from './stadium.js';
 import { Seats } from './seats.js';
 import { Screens } from './screens.js';
 import { loadCrest, crestCanvas } from './crest.js';
+import { Music } from './music.js';
 
 const $ = (s) => document.querySelector(s);
 const nextFrame = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
@@ -87,6 +88,7 @@ async function build() {
   progress(0.4, 'Pouring the concrete');
   await nextFrame();
   stadium = buildStadium(scene, renderer);
+  for (const box of stadium.skyboxes) box.booked = VIP.prebooked.includes(box.number);
 
   progress(0.55, 'Bolting in ~90,000 seats');
   await nextFrame();
@@ -177,6 +179,12 @@ function introPose() {
   const t = new THREE.Vector3(0, 10, 0);
   return pose(t.clone().add(new THREE.Vector3().setFromSphericalCoords(1150, 0.55, aerialAz - 0.9)), t);
 }
+// inside the bowl: orbit around the centre spot, low enough to see every stand
+function insidePose() {
+  const t = new THREE.Vector3(0, 9, 0);
+  const az = Math.atan2(camera.position.x, camera.position.z);
+  return pose(t.clone().add(new THREE.Vector3().setFromSphericalCoords(device.phone ? 52 : 46, 1.2, az)), t, device.phone ? 68 : 60);
+}
 function standPose(s) {
   const f = frameAt(standCenterAngle(s), 40, 24);
   const back = device.phone && innerHeight > innerWidth ? 1.5 : 1;
@@ -204,18 +212,18 @@ function viewPose(eye) {
   const dir = target.clone().sub(eye).normalize();
   return pose(eye, eye.clone().addScaledVector(dir, 30), device.phone ? 62 : 55);
 }
-function skyboxPose(s) {
-  const f = frameAt(standCenterAngle(s), 32.4, 11.6);
+function skyboxPose(idx) {
+  const f = frameAt(stadium.skyboxes[idx].t, 32.4, 11.6);
   const eye = f.pos.clone().addScaledVector(UP, 2.4);
   return pose(eye, eye.clone().addScaledVector(f.n, 30).addScaledVector(UP, -6), device.phone ? 66 : 58);
 }
 
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-const roofOpacity = { aerial: 0.62, stand: 0.34, block: 0.5, seat: 0.5, skybox: 0.62, view: 0.62 };
-const shadowFocus = { aerial: 175, stand: 110, block: 45, seat: 28, skybox: 165, view: 165 };
+const roofOpacity = { aerial: 0.62, inside: 0.6, stand: 0.34, block: 0.5, seat: 0.5, skybox: 0.62, view: 0.62 };
+const shadowFocus = { aerial: 175, inside: 165, stand: 110, block: 45, seat: 28, skybox: 165, view: 165 };
 
 function focusFor(mode, p) {
-  if (mode === 'aerial' || mode === 'view' || mode === 'skybox') return { c: new THREE.Vector3(), r: shadowFocus[mode] };
+  if (mode === 'aerial' || mode === 'inside' || mode === 'view' || mode === 'skybox') return { c: new THREE.Vector3(), r: shadowFocus[mode] };
   return { c: p.target.clone().setY(0), r: shadowFocus[mode] };
 }
 
@@ -304,8 +312,21 @@ function goAerial(intro = false) {
   const p = aerialPose();
   flyTo(p, 'aerial', intro ? 3.2 : 1.8, () => {
     look.target.copy(p.target);
-    useOrbit(p.target, { minDistance: 230, maxDistance: 900, maxPolarAngle: 1.3, autoRotate: !device.test, autoRotateSpeed: 0.35 });
+    useOrbit(p.target, { minDistance: AERIAL_MIN, maxDistance: 900, maxPolarAngle: 1.3, autoRotate: !device.test, autoRotateSpeed: 0.35 });
   });
+}
+
+const AERIAL_MIN = 210, INSIDE_MAX = 78;
+
+function goInside() {
+  state.stand = state.block = state.seat = state.skybox = -1;
+  setMode('inside');
+  seats.setHoverStand(-1);
+  seats.setHoverBlock(-1);
+  seats.setDetailBlock(-1);
+  seats.clearSelection();
+  const p = insidePose();
+  flyTo(p, 'inside', 2.0, () => useOrbit(p.target, { minDistance: 14, maxDistance: INSIDE_MAX, minPolarAngle: 0.55, maxPolarAngle: 1.5 }));
 }
 
 function goStand(s) {
@@ -318,8 +339,9 @@ function goStand(s) {
   flyTo(p, 'stand', 1.7, () => useOrbit(p.target, { minDistance: 50, maxDistance: 260, maxPolarAngle: 1.45 }));
 }
 
-function goBlock(id) {
+function goBlock(id, from) {
   const b = seatData.blocks[id];
+  state.blockFrom = from || (state.mode === 'inside' ? 'inside' : state.mode === 'stand' ? 'stand' : state.blockFrom || 'stand');
   state.block = id; state.stand = b.stand; state.seat = -1;
   setMode('block');
   seats.setHoverStand(-1);
@@ -344,12 +366,16 @@ function goSeat(k) {
   });
 }
 
-function goSkybox() {
-  const b = seatData.blocks[seatData.block[state.seat]];
-  state.skybox = b.stand;
+// from: 'seat' (upgrade from a chosen seat) or 'suites' (booking a whole suite)
+function goSkybox(idx, from) {
+  if (from) state.skyFrom = from;
+  if (idx == null) idx = state.skybox >= 0 ? state.skybox : stadium.skyboxes.findIndex((b) => b.central && b.stand === seatData.blocks[seatData.block[state.seat]].stand);
+  state.skybox = idx;
+  if (state.skyFrom === 'suites') { state.seat = -1; state.block = -1; state.stand = stadium.skyboxes[idx].stand; }
+  closeSuites();
   setMode('skybox');
   seats.setDim(false);
-  const p = skyboxPose(b.stand);
+  const p = skyboxPose(idx);
   flyTo(p, 'skybox', 1.9, () => { useLook(p); showSkyboxCard(); });
 }
 
@@ -371,12 +397,15 @@ function goView(from) {
 
 function back() {
   if (!$('#modal').classList.contains('hidden')) { $('#modal').classList.add('hidden'); return; }
+  if (!$('#book').classList.contains('hidden')) { $('#book').classList.add('hidden'); return; }
+  if (!$('#suites').classList.contains('hidden')) { closeSuites(); return; }
   if (flight) return;
   switch (state.mode) {
+    case 'inside': goAerial(); break;
     case 'stand': goAerial(); break;
-    case 'block': goStand(state.stand); break;
+    case 'block': state.blockFrom === 'inside' ? goInside() : goStand(state.stand); break;
     case 'seat': goBlock(state.block); break;
-    case 'skybox': goSeat(state.seat); break;
+    case 'skybox': state.skyFrom === 'suites' ? (goInside(), openSuites()) : goSeat(state.seat); break;
     case 'view': state.viewFrom === 'skybox' ? goSkybox() : goSeat(state.seat); break;
   }
 }
@@ -386,10 +415,16 @@ function updateCrumbs() {
   const el = $('#crumbs');
   el.innerHTML = '';
   const items = [{ label: 'Stadium', go: () => goAerial() }];
-  if (state.stand >= 0 && state.mode !== 'aerial') items.push({ label: STANDS[state.stand].name, go: () => goStand(state.stand) });
-  if (state.block >= 0 && ['block', 'seat', 'skybox', 'view'].includes(state.mode)) items.push({ label: `Block ${seatData.blocks[state.block].number}`, go: () => goBlock(state.block) });
-  if (state.seat >= 0 && ['seat', 'skybox', 'view'].includes(state.mode)) items.push({ label: `Row ${seatData.row[state.seat]} · Seat ${seatData.num[state.seat]}`, go: () => goSeat(state.seat) });
-  if (state.mode === 'skybox' || (state.mode === 'view' && state.viewFrom === 'skybox')) items.push({ label: `Skybox ${stadium.skyboxes[state.skybox].number}`, go: () => goSkybox() });
+  const suitePath = (state.mode === 'skybox' || (state.mode === 'view' && state.viewFrom === 'skybox')) && state.skyFrom === 'suites';
+  if (state.mode === 'inside') items.push({ label: 'Inside view' });
+  else if (suitePath) items.push({ label: 'VIP suites', go: () => { goInside(); openSuites(); } });
+  else if (state.stand >= 0 && state.mode !== 'aerial') {
+    if (state.blockFrom === 'inside' && state.mode !== 'stand') items.push({ label: 'Inside view', go: () => goInside() });
+    else items.push({ label: STANDS[state.stand].name, go: () => goStand(state.stand) });
+  }
+  if (state.block >= 0 && !suitePath && ['block', 'seat', 'skybox', 'view'].includes(state.mode)) items.push({ label: `Block ${seatData.blocks[state.block].number}`, go: () => goBlock(state.block) });
+  if (state.seat >= 0 && !suitePath && ['seat', 'skybox', 'view'].includes(state.mode)) items.push({ label: `Row ${seatData.row[state.seat]} · Seat ${seatData.num[state.seat]}`, go: () => goSeat(state.seat) });
+  if (state.mode === 'skybox' || (state.mode === 'view' && state.viewFrom === 'skybox')) items.push({ label: `Suite ${stadium.skyboxes[state.skybox].number}`, go: () => goSkybox() });
   items.forEach((it, i) => {
     if (i) { const s = document.createElement('span'); s.className = 'sep'; s.textContent = '›'; el.appendChild(s); }
     const last = i === items.length - 1;
@@ -402,11 +437,12 @@ function updateCrumbs() {
 }
 
 const HINTS = {
-  aerial: ['Hover a stand to see availability · Click to fly in · Drag to orbit', 'Tap a stand to see availability · Tap again to fly in'],
+  aerial: ['Hover a stand to see availability · Click to fly in · Scroll in to go inside', 'Tap a stand · Tap again to fly in · Pinch in to go inside'],
+  inside: ['Drag to look around · Hover a block for prices · Click to choose · Scroll out for the top view', 'Drag to look around · Tap a block · Tap again to choose · Pinch out for the top view'],
   stand: ['Hover a block to see prices · Click to zoom in · Scroll to zoom', 'Tap a block to see prices · Tap again to zoom in'],
   block: ['Hover a seat · Click to choose it · Grey seats are taken', 'Tap a seat · Tap again to choose it · Grey seats are taken'],
   seat: ['Upgrade to a skybox, or keep your seat to see the view', 'Upgrade to a skybox, or keep your seat to see the view'],
-  skybox: ['Drag to look around · See the view from your armchair', 'Drag to look around · See the view from your armchair'],
+  skybox: ['Drag to look around · Scroll to zoom', 'Drag to look around · Pinch to zoom'],
   view: ['Drag to look around · Scroll to zoom', 'Drag to look around · Pinch to zoom'],
 };
 function updateHint() {
@@ -449,7 +485,8 @@ function showTicket() {
   $('#t-price').textContent = b.price;
   const up = 250 - b.price;
   $('#t-primary').textContent = `Upgrade · +${eur(up)}`;
-  $('#t-primary').onclick = () => !flight && goSkybox();
+  const upIdx = stadium.skyboxes.findIndex((x) => x.central && x.stand === b.stand);
+  $('#t-primary').onclick = () => !flight && goSkybox(upIdx, 'seat');
   $('#t-secondary').textContent = 'Keep my seat';
   $('#t-secondary').onclick = () => !flight && goView('seat');
   $('#ticket').classList.remove('hidden');
@@ -459,17 +496,28 @@ function showTicket() {
 
 function showSkyboxCard() {
   const box = stadium.skyboxes[state.skybox];
-  $('#t-kicker').textContent = `${STANDS[box.stand].name} · Hospitality`;
-  $('#t-title').textContent = `Skybox ${box.number}`;
-  $('#t-l1').textContent = 'Row'; $('#t-l2').textContent = 'Seat';
-  $('#t-row').textContent = 'Front';
-  $('#t-seat').textContent = '6';
+  const suite = state.skyFrom === 'suites';
+  $('#t-kicker').textContent = `${STANDS[box.stand].name} · VIP suite`;
+  $('#t-title').textContent = `Suite ${box.number}`;
   $('#t-gate').textContent = `${STANDS[box.stand].short}VIP`;
-  $('#t-price').textContent = 250;
-  $('#t-primary').textContent = 'See the view';
-  $('#t-primary').onclick = () => !flight && goView('skybox');
-  $('#t-secondary').textContent = 'Back to my seat';
-  $('#t-secondary').onclick = () => !flight && goSeat(state.seat);
+  $('#t-price').textContent = VIP.pricePerGuest;
+  if (suite) {
+    $('#t-l1').textContent = 'Guests'; $('#t-l2').textContent = 'Seats';
+    $('#t-row').textContent = `≤${VIP.capacity}`;
+    $('#t-seat').textContent = 'Box';
+    $('#t-primary').textContent = box.booked ? 'Already booked' : 'Book this suite';
+    $('#t-primary').onclick = () => !flight && !box.booked && openBooking(box.id);
+    $('#t-secondary').textContent = 'See the view';
+    $('#t-secondary').onclick = () => !flight && goView('skybox');
+  } else {
+    $('#t-l1').textContent = 'Row'; $('#t-l2').textContent = 'Seat';
+    $('#t-row').textContent = 'Front';
+    $('#t-seat').textContent = '6';
+    $('#t-primary').textContent = 'See the view';
+    $('#t-primary').onclick = () => !flight && goView('skybox');
+    $('#t-secondary').textContent = 'Back to my seat';
+    $('#t-secondary').onclick = () => !flight && goSeat(state.seat);
+  }
   $('#ticket').classList.remove('hidden');
   const s = box.seats[5];
   requestAnimationFrame(() => renderPreview(eyeOf(s.pos, s.n)));
@@ -478,14 +526,18 @@ function showSkyboxCard() {
 function showViewCard() {
   if (state.viewFrom === 'skybox') {
     const box = stadium.skyboxes[state.skybox];
-    $('#v-kicker').textContent = `From Skybox ${box.number} · Front row · Seat 6`;
-    $('#v-sub em').textContent = `${STANDS[box.stand].name} · Hospitality`;
-    $('#v-price').textContent = 250;
+    $('#v-kicker').textContent = `From Suite ${box.number} · Front row`;
+    $('#v-sub em').textContent = `${STANDS[box.stand].name} · VIP suite`;
+    $('#v-price').textContent = VIP.pricePerGuest;
+    $('#confirm').textContent = state.skyFrom === 'suites' ? (box.booked ? 'Already booked' : 'Book this suite') : 'Confirm ticket';
+    $('#another').textContent = state.skyFrom === 'suites' ? 'Other suites' : 'Choose another seat';
   } else {
     const k = state.seat, b = seatData.blocks[seatData.block[k]];
     $('#v-kicker').textContent = `From Block ${b.number} · Row ${seatData.row[k]} · Seat ${seatData.num[k]}`;
     $('#v-sub em').textContent = `${STANDS[b.stand].name} · ${tierName(b.tier)}`;
     $('#v-price').textContent = b.price;
+    $('#confirm').textContent = 'Confirm ticket';
+    $('#another').textContent = 'Choose another seat';
   }
   $('#viewcard').classList.remove('hidden');
   $('#actions').classList.remove('hidden');
@@ -514,8 +566,9 @@ function confirmTicket() {
   const box = sky ? stadium.skyboxes[state.skybox] : null;
   $('#m-fixture').textContent = `${SITE.fixture} · ${SITE.meta}`;
   $('#m-stand').textContent = STANDS[sky ? box.stand : b.stand].name;
-  $('#m-l1').textContent = sky ? 'Skybox' : 'Block';
+  $('#m-l1').textContent = sky ? 'Suite' : 'Block';
   $('#m-block').textContent = sky ? box.number : b.number;
+  $('#m-l2').textContent = 'Row'; $('#m-l3').textContent = 'Seat';
   $('#m-row').textContent = sky ? 'Front' : seatData.row[k];
   $('#m-seat').textContent = sky ? 6 : seatData.num[k];
   $('#m-gate').textContent = sky ? `${STANDS[box.stand].short}VIP` : b.gate;
@@ -530,8 +583,91 @@ function confirmTicket() {
 }
 
 $('#back').onclick = back;
-$('#confirm').onclick = () => !flight && confirmTicket();
-$('#another').onclick = () => !flight && goBlock(state.block);
+$('#confirm').onclick = () => {
+  if (flight) return;
+  if (state.viewFrom === 'skybox' && state.skyFrom === 'suites') { if (!stadium.skyboxes[state.skybox].booked) openBooking(state.skybox); }
+  else confirmTicket();
+};
+$('#another').onclick = () => {
+  if (flight) return;
+  if (state.viewFrom === 'skybox' && state.skyFrom === 'suites') { goInside(); openSuites(); }
+  else goBlock(state.block);
+};
+
+// ---------------- VIP suites ----------------
+function renderSuites() {
+  const list = $('#suites-list');
+  list.innerHTML = '';
+  for (let s of [3, 1, 0, 2]) { // Tribuna and Lateral first
+    const g = document.createElement('div');
+    g.className = 's-group';
+    g.textContent = STANDS[s].name;
+    list.appendChild(g);
+    for (const box of stadium.skyboxes.filter((b) => b.stand === s)) {
+      const it = document.createElement('button');
+      it.className = 's-item' + (box.booked ? ' booked' : '');
+      it.innerHTML = `<span class="s-num">${box.number}</span><span class="s-mid"><b>Suite ${box.number}${box.central ? ' · Halfway line' : ''}</b><span>Up to ${VIP.capacity} guests · ${eur(VIP.pricePerGuest)} per guest</span></span><span class="s-state">${box.booked ? 'Booked' : 'Available'}</span>`;
+      it.onclick = () => { if (!flight) goSkybox(box.id, 'suites'); };
+      list.appendChild(it);
+    }
+  }
+}
+function openSuites() { renderSuites(); hideOverlays(); $('#suites').classList.remove('hidden'); }
+function closeSuites() { $('#suites').classList.add('hidden'); }
+$('#vip').onclick = () => { $('#suites').classList.contains('hidden') ? openSuites() : closeSuites(); };
+$('#suites-close').onclick = closeSuites;
+
+let booking = { box: -1, guests: 6 };
+function updateBooking() {
+  $('#b-guests').textContent = booking.guests;
+  $('#b-each').textContent = `${booking.guests} × ${eur(VIP.pricePerGuest)}`;
+  $('#b-total').textContent = eur(booking.guests * VIP.pricePerGuest);
+}
+function openBooking(idx) {
+  const box = stadium.skyboxes[idx];
+  booking = { box: idx, guests: Math.min(6, VIP.capacity) };
+  $('#b-kicker').textContent = `${STANDS[box.stand].name} · ${SITE.meta}`;
+  $('#b-title').textContent = `Book Suite ${box.number}`;
+  updateBooking();
+  $('#book').classList.remove('hidden');
+}
+$('#b-minus').onclick = () => { booking.guests = Math.max(1, booking.guests - 1); updateBooking(); };
+$('#b-plus').onclick = () => { booking.guests = Math.min(VIP.capacity, booking.guests + 1); updateBooking(); };
+$('#b-cancel').onclick = () => $('#book').classList.add('hidden');
+$('#b-confirm').onclick = () => {
+  const box = stadium.skyboxes[booking.box];
+  $('#book').classList.add('hidden');
+  $('#m-fixture').textContent = `${SITE.fixture} · ${SITE.meta}`;
+  $('#m-stand').textContent = STANDS[box.stand].name;
+  $('#m-l1').textContent = 'Suite'; $('#m-block').textContent = box.number;
+  $('#m-l2').textContent = 'Guests'; $('#m-row').textContent = booking.guests;
+  $('#m-l3').textContent = 'Seats'; $('#m-seat').textContent = 'Box';
+  $('#m-gate').textContent = `${STANDS[box.stand].short}VIP`;
+  $('#m-price').textContent = eur(booking.guests * VIP.pricePerGuest);
+  drawQR($('#m-qr'), 9000 + box.id);
+  $('#modal').classList.remove('hidden');
+  $('#m-done').onclick = () => {
+    $('#modal').classList.add('hidden');
+    box.booked = true;
+    goInside();
+  };
+};
+
+// ---------------- music ----------------
+const music = new Music();
+async function setMusic(on) {
+  const ok = await music.setOn(on);
+  $('#music').setAttribute('aria-pressed', ok);
+  $('#music-label').textContent = ok ? `${music.label} on` : 'Music off';
+}
+$('#music').onclick = () => setMusic($('#music').getAttribute('aria-pressed') !== 'true');
+music.init().then(() => {
+  if (!MUSIC.autoplay || device.test) return;
+  // browsers only allow sound after a user gesture
+  const start = () => { removeEventListener('pointerdown', start, true); if (!music.on) setMusic(true); };
+  addEventListener('pointerdown', start, true);
+});
+document.addEventListener('visibilitychange', () => music.setHidden(document.hidden));
 addEventListener('keydown', (e) => { if (e.key === 'Escape') back(); });
 
 $('#sound').onclick = () => {
@@ -585,7 +721,7 @@ let pointerDirty = false;
 
 function pick() {
   raycaster.setFromCamera(ndc, camera);
-  if (state.mode === 'aerial' || state.mode === 'stand') {
+  if (state.mode === 'aerial' || state.mode === 'stand' || state.mode === 'inside') {
     const hit = raycaster.intersectObjects(stadium.pickMeshes, false)[0];
     if (!hit) return null;
     const { t, d } = locate(hit.point.x, hit.point.z);
@@ -612,7 +748,7 @@ function applyHover(h) {
       const st = standStats(seatData, h.id);
       showChip({ kicker: 'Spotify Camp Nou', title: STANDS[h.id].name, sub: `${fmt(st.free)} left`, price: `from ${st.from}` });
     } else hideChip();
-  } else if (state.mode === 'stand') {
+  } else if (state.mode === 'stand' || state.mode === 'inside') {
     changed = seats.setHoverBlock(h ? h.id : -1);
     if (h) {
       const b = seatData.blocks[h.id];
@@ -670,6 +806,13 @@ canvas.addEventListener('pointermove', (e) => {
     invalidate();
   }
   if (prev) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pointers.size === 2 && pinch && (state.mode === 'aerial' || state.mode === 'inside')) {
+    const [a, b] = [...pointers.values()];
+    const d = Math.hypot(a.x - b.x, a.y - b.y);
+    const ratio = d / pinch.d;
+    if (state.mode === 'aerial' && ratio > 1.25) zoomThrough(-1, 200);
+    else if (state.mode === 'inside' && ratio < 0.8) zoomThrough(1, 200);
+  }
   if (e.pointerType === 'mouse') {
     chipX = e.clientX; chipY = e.clientY;
     ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
@@ -698,8 +841,22 @@ function endPointer(e) {
 canvas.addEventListener('pointerup', endPointer);
 canvas.addEventListener('pointercancel', endPointer);
 canvas.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && !pointers.size) { applyHover(null); } });
+let zoomPush = 0;
+function zoomThrough(dir, amount) {
+  // dir < 0: zooming in, dir > 0: zooming out; switch once you push past the limit
+  if (flight || !controls.enabled) return;
+  const d = controls.getDistance();
+  const atIn = state.mode === 'aerial' && dir < 0 && d <= AERIAL_MIN + 8;
+  const atOut = state.mode === 'inside' && dir > 0 && d >= INSIDE_MAX - 3;
+  if (!atIn && !atOut) { zoomPush = 0; return; }
+  zoomPush += amount;
+  if (zoomPush < 120) return;
+  zoomPush = 0;
+  atIn ? goInside() : goAerial();
+}
 canvas.addEventListener('wheel', (e) => {
   lastMove = performance.now();
+  zoomThrough(Math.sign(e.deltaY), Math.abs(e.deltaY));
   if (state.mode === 'view' || state.mode === 'skybox') {
     e.preventDefault();
     camera.fov = THREE.MathUtils.clamp(camera.fov * (1 + e.deltaY * 0.001), 20, 75);
@@ -797,7 +954,7 @@ canvas.addEventListener('webglcontextrestored', () => {
 
 // test hooks for automated runs
 Object.assign(app, {
-  goAerial, goStand, goBlock, goSeat, goSkybox, goView, confirmTicket, back,
+  goAerial, goInside, goStand, goBlock, goSeat, goSkybox, goView, confirmTicket, back, openSuites, openBooking,
   get flying() { return !!flight; },
   get seats() { return seatData; },
   firstFreeSeat(blockId, row = 10) {

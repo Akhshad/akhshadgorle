@@ -36,6 +36,9 @@ Then open **http://localhost:5173**.
   - the lower tier is blue and the middle and upper tiers are red
   - **MÉS QUE / UN CLUB** is spelled out in yellow seats on the Lateral middle tier
   - about 30% of seats are marked as taken, shown in dark grey
+- **Inside view:** scroll (or pinch) in from the top view and the camera drops inside the bowl. Drag to turn around and see every stand, hover any block for its price, and click it to choose seats. Scroll back out for the top view.
+- **VIP suites:** 12 glass suites with leather armchairs on the ring above the lower tier. Open **VIP suites** in the top bar, pick a suite, fly into it, check the view, choose the number of guests and book it. Prices and pre-booked suites are set in `VIP` in `js/config.js`.
+- **Background music:** a **Music** button in the top bar. Save your own copy of the Cant del Barça as `assets/anthem.mp3` and it loops in the background, starting on your first click or tap. The recording isn't included because it's copyrighted. Without the file, a generated crowd sound plays instead.
 - **The flow:** aerial view → stand → block (rounded high-detail seats) → seat with a ticket and a rendered "Your view" picture → optional skybox upgrade → first-person view from the seat → confirm, with a ticket and QR code. You can step back at any point with the back button, the breadcrumbs or Esc.
 - **Laptop vs phone:** on a laptop you hover to preview and click to choose. On a phone you tap to preview and tap again to choose, and you pinch to zoom. Phones also get solid panels, safe-area insets and their own quality preset.
 - **Smoothness:** the scene only redraws when something changes. Shadows are cached (one shadow map per camera flight), shaders are compiled during the preloader, and resolution adjusts dynamically based on the device's frame cadence. It also redraws after a resize, a tab switch or a GPU context loss.

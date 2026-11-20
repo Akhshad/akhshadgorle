@@ -53,3 +53,19 @@ export const MODEL = {
   // pitch stay, because the seat picker needs them.
   hide: ['facade', 'roof', 'columns'],
 };
+
+// VIP suites in the glass ring above the lower tier.
+export const VIP = {
+  capacity: 12,          // armchairs per suite
+  pricePerGuest: 250,    // euros
+  prebooked: [2, 7, 10], // suite numbers already sold
+};
+
+// Background music. Save your own copy of the track at this path (MP3 or
+// M4A). Without a file, a generated crowd ambience plays instead.
+export const MUSIC = {
+  url: './assets/anthem.mp3',
+  title: 'Cant del Barça',
+  volume: 0.5,
+  autoplay: true, // starts on the first click or tap (browsers block sound before that)
+};
