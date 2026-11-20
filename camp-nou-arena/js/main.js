@@ -7,6 +7,7 @@ import { installColourGrade, buildSky, buildEnvironment, buildSun, setShadowFocu
 import { buildStadium, frameAt } from './stadium.js';
 import { Seats } from './seats.js';
 import { Screens } from './screens.js';
+import { loadCrest, crestCanvas } from './crest.js';
 
 const $ = (s) => document.querySelector(s);
 const nextFrame = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
@@ -70,7 +71,10 @@ window.app = app;
 
 // ---------------- build ----------------
 async function build() {
-  progress(0.05, 'Setting up the sky');
+  progress(0.03, 'Setting up the sky');
+  await loadCrest();
+  const crest = crestCanvas(160).toDataURL();
+  for (const el of document.querySelectorAll('.logo')) el.innerHTML = `<img src="${crest}" alt="">`;
   await nextFrame();
   buildSky(scene);
   buildEnvironment(renderer, scene);
@@ -207,7 +211,7 @@ function skyboxPose(s) {
 }
 
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-const roofOpacity = { aerial: 0.16, stand: 0.22, block: 0.45, seat: 0.45, skybox: 0.6, view: 0.6 };
+const roofOpacity = { aerial: 0.62, stand: 0.34, block: 0.5, seat: 0.5, skybox: 0.62, view: 0.62 };
 const shadowFocus = { aerial: 175, stand: 110, block: 45, seat: 28, skybox: 165, view: 165 };
 
 function focusFor(mode, p) {
@@ -245,6 +249,7 @@ function stepFlight(now) {
   camera.lookAt(look.target);
   camera.updateProjectionMatrix();
   stadium.roofMat.opacity = f.roofFrom + (f.roofTo - f.roofFrom) * t;
+  stadium.decalMat.opacity = Math.min(0.95, stadium.roofMat.opacity * 1.6);
   if (raw >= 1) {
     flight = null;
     f.onEnd();

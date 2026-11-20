@@ -4,7 +4,8 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { TIERS, RING, SEGMENTS, SECTORS, T_START, point, inward, rowHeight, rowOffset, standCenterAngle } from './layout.js';
+import { drawCrest } from './crest.js';
+import { TIERS, RING, SEGMENTS, SECTORS, T_START, point, inward, rAt, rowHeight, rowOffset, standCenterAngle } from './layout.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
 
@@ -78,7 +79,7 @@ function tierSteps(tier) {
   return pts;
 }
 
-const CONCRETE = 0xc9c5bd, RISER = 0xa9a59e, AISLE = 0xe2ded6;
+const CONCRETE = 0xdcd9d2, RISER = 0xbdb9b2, AISLE = 0xeeebe5;
 const aisleEvery = SEGMENTS / SECTORS;
 
 function terraceColor(j, k, a, b) {
@@ -149,6 +150,56 @@ function stripTexture(text, colors, w = 2048, h = 64) {
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = THREE.RepeatWrapping;
+  return tex;
+}
+
+// Blue club band: crest + text, repeated along the strip.
+function brandTexture(text, segments, w = 4096, h = 128, bg = '#1b3d97') {
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  const g = cv.getContext('2d');
+  g.fillStyle = bg;
+  g.fillRect(0, 0, w, h);
+  g.fillStyle = '#a50044';
+  g.fillRect(0, h * 0.86, w, h * 0.07);
+  const seg = w / segments;
+  g.font = `800 ${Math.round(h * 0.42)}px Inter, Arial, sans-serif`;
+  g.textBaseline = 'middle';
+  g.textAlign = 'left';
+  for (let i = 0; i < segments; i++) {
+    const x0 = i * seg + seg * 0.5;
+    const tw = g.measureText(text).width, ch = h * 0.72, cw = ch * (100 / 120);
+    const start = x0 - (cw + h * 0.25 + tw) / 2;
+    drawCrest(g, start, (h - ch) / 2 - h * 0.04, ch);
+    g.fillStyle = '#fff';
+    g.fillText(text, start + cw + h * 0.25, h * 0.44);
+  }
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.anisotropy = 8;
+  return tex;
+}
+
+function roofDecalTexture() {
+  const W = 2048, H = 512;
+  const cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  const g = cv.getContext('2d');
+  g.font = '900 300px Inter, "Arial Black", Arial, sans-serif';
+  g.textBaseline = 'middle';
+  g.textAlign = 'left';
+  const text = 'CAMP NOU';
+  const tw = g.measureText(text).width, ch = 400, cw = ch * (100 / 120);
+  const start = (W - (cw + 80 + tw)) / 2;
+  g.shadowColor = 'rgba(0,0,0,0.25)';
+  g.shadowBlur = 12;
+  drawCrest(g, start, (H - ch) / 2, ch);
+  g.fillStyle = '#ffffff';
+  g.fillText(text, start + cw + 80, H / 2 + 14);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
   return tex;
 }
 
@@ -317,73 +368,170 @@ export function buildStadium(scene, renderer) {
     group.add(rail);
   }
 
-  // 360° LED ribbon on the upper tier front
-  const ledTex = stripTexture('SPOTIFY CAMP NOU · MÉS QUE UN CLUB', ['#0b1a3a', '#a50044', '#0b1a3a', '#004d98'], 4096, 96);
-  ledTex.repeat.set(4, 1);
-  textures.push(ledTex);
-  const led = new THREE.Mesh(
-    sweep([[dF(T3) - 0.08, top(T2) + 1.0], [dF(T3) - 0.08, T3.h0 - 0.4]], null, { segs: 512 }),
-    new THREE.MeshStandardMaterial({ map: ledTex, emissive: 0xffffff, emissiveMap: ledTex, emissiveIntensity: 0.9, roughness: 0.4, side: THREE.DoubleSide }),
-  );
-  group.add(led);
+  // blue FC Barcelona fascias on the middle and upper tier fronts
+  const fasciaTex = brandTexture('FC BARCELONA', 6, 4096, 96);
+  fasciaTex.repeat.set(6, 1);
+  textures.push(fasciaTex);
+  const fasciaMat = new THREE.MeshStandardMaterial({ map: fasciaTex, emissive: 0xffffff, emissiveMap: fasciaTex, emissiveIntensity: 0.25, roughness: 0.5, side: THREE.DoubleSide });
+  group.add(new THREE.Mesh(sweep([[dF(T3) - 0.08, top(T2) + 0.6], [dF(T3) - 0.08, T3.h0 - 0.3]], null, { segs: 512 }), fasciaMat));
+  group.add(new THREE.Mesh(sweep([[dF(T2) - 0.08, RING.ceil + 0.05], [dF(T2) - 0.08, T2.h0 - 0.1]], null, { segs: 512 }), fasciaMat));
 
-  // ---- façade with Camp Nou's stacked exterior terraces
-  const facadeProfiles = [sweep([[RING.facadeD, 0], [RING.facadeD, RING.roofOuterH]], () => 0xd9d6cf, { segs: 256 })];
-  for (let h = 8; h < 56; h += 8.4) {
-    facadeProfiles.push(sweep([[RING.facadeD, h], [RING.facadeD + 6, h], [RING.facadeD + 6, h + 0.7], [RING.facadeD, h + 0.7]], () => 0xf3f1ec, { segs: 256 }));
+  // ---- exterior: open stacked decks with skirts of slanted multicolour slats
+  const WALL_D = 79, DECK_D = 90;
+  const exterior = [
+    sweep([[WALL_D, 0], [WALL_D, RING.roofOuterH - 1]], () => 0x34363b, { segs: 256 }),
+    sweep([[WALL_D - 1, 1.2], [DECK_D + 9, 1.2], [DECK_D + 10.5, 0]], () => 0xb8b0a1, { segs: 256 }), // plinth
+  ];
+  const DECKS = [14, 28, 42];
+  for (const h of DECKS) {
+    exterior.push(sweep([[WALL_D, h], [DECK_D, h], [DECK_D, h + 0.9], [WALL_D, h + 0.9]], () => 0xd3cfc6, { segs: 256 }));
   }
-  const facade = new THREE.Mesh(mergeGeometries(facadeProfiles), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, side: THREE.DoubleSide }));
+  const facade = new THREE.Mesh(mergeGeometries(exterior), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, side: THREE.DoubleSide }));
   facade.castShadow = true; facade.receiveShadow = true;
   group.add(facade);
 
-  // façade columns
-  const colCount = 96;
-  const colGeo = new THREE.BoxGeometry(0.7, RING.roofOuterH, 0.7).translate(0, RING.roofOuterH / 2, 0);
-  const cols = new THREE.InstancedMesh(colGeo, new THREE.MeshStandardMaterial({ color: 0xeeeae2, roughness: 0.7 }), colCount);
+  // dark structural columns, inner and outer rings
+  const colCount = 56;
+  const colGeo = new THREE.BoxGeometry(1.1, RING.roofOuterH, 1.1).translate(0, RING.roofOuterH / 2, 0);
+  const cols = new THREE.InstancedMesh(colGeo, new THREE.MeshStandardMaterial({ color: 0x2b2d32, roughness: 0.7 }), colCount * 2);
   for (let i = 0; i < colCount; i++) {
-    const f = frameAt(T_START + (i / colCount) * Math.PI * 2, RING.facadeD + 6, 0);
-    cols.setMatrixAt(i, m4.compose(f.pos, f.quat, one));
+    for (const [k, d] of [[0, WALL_D + 1.5], [1, DECK_D - 1.5]]) {
+      const f = frameAt(T_START + ((i + 0.5 * k) / colCount) * Math.PI * 2, d, 0);
+      cols.setMatrixAt(i * 2 + k, m4.compose(f.pos, f.quat, one));
+    }
   }
   cols.castShadow = true;
   cols.computeBoundingSphere();
   group.add(cols);
 
-  // ---- ring roof: translucent membrane on radial trusses
-  const roofMat = new THREE.MeshStandardMaterial({ color: 0xf4f6f8, roughness: 0.6, transparent: true, opacity: 0.18, depthWrite: false, side: THREE.DoubleSide });
-  const roof = new THREE.Mesh(sweep([[RING.roofOuterD, RING.roofOuterH], [RING.roofInnerD, RING.roofInnerH]], null, { segs: 256 }), roofMat);
+  // slat skirts: hang from a deck edge, lean inwards like a lampshade, slant sideways
+  const SLAT_L = 10.5;
+  const slatGeo = new THREE.BoxGeometry(0.3, SLAT_L, 0.07).translate(0, -SLAT_L / 2, 0);
+  const skirts = [RING.roofOuterH - 1, DECKS[2], DECKS[1]];
+  const perSkirt = 1500;
+  const slats = new THREE.InstancedMesh(slatGeo, new THREE.MeshStandardMaterial({ roughness: 0.45, metalness: 0.1 }), perSkirt * skirts.length);
+  const palette = [0xa50044, 0xd9283b, 0x1f56c8, 0x0f2a6b, 0xf6c400, 0xd9283b, 0x1f56c8, 0xff7a1a, 0x6b1d5a, 0x2a8fd6, 0xa50044, 0x0f2a6b];
+  const lean = Math.atan2(4.5, SLAT_L), slant = 0.38;
+  const qLocal = new THREE.Quaternion().setFromEuler(new THREE.Euler(-lean, 0, slant, 'XZY'));
+  const qs = new THREE.Quaternion(), col = new THREE.Color();
+  let si = 0, seed = 12345;
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  for (const h of skirts) {
+    for (let i = 0; i < perSkirt; i++) {
+      const f = frameAt(T_START + (i / perSkirt) * Math.PI * 2, DECK_D + 0.4, h + 0.2);
+      qs.copy(f.quat).multiply(qLocal);
+      slats.setMatrixAt(si, m4.compose(f.pos, qs, one));
+      slats.setColorAt(si, col.setHex(palette[Math.floor(rnd() * palette.length)]));
+      si++;
+    }
+  }
+  slats.castShadow = true;
+  slats.receiveShadow = true;
+  slats.computeBoundingSphere();
+  group.add(slats);
+
+  // ---- roof: translucent ETFE pillows on a radial grid around an oval opening
+  const OPEN_A = 54, OPEN_B = 41, IN_H = 61, OUT_D = 84;
+  const openR = (t) => (OPEN_A * OPEN_B) / Math.hypot(OPEN_B * Math.cos(t), OPEN_A * Math.sin(t));
+  const roofAt = (t, f, out) => {
+    const r = openR(t) + (rAt(t) + OUT_D - openR(t)) * f;
+    out.set(r * Math.cos(t), IN_H + (RING.roofOuterH + 1.5 - IN_H) * f + 1.6 * Math.sin(Math.PI * f), r * Math.sin(t));
+    return out;
+  };
+  const NT = 96, NR = 9, S = 4;
+  const pos = [], idx = [];
+  const pv = new THREE.Vector3();
+  for (let i = 0; i < NT; i++) {
+    for (let j = 0; j < NR; j++) {
+      const base = pos.length / 3;
+      for (let a = 0; a <= S; a++) {
+        for (let b = 0; b <= S; b++) {
+          const u = a / S, v = b / S;
+          roofAt(T_START + ((i + u) / NT) * Math.PI * 2, (j + v) / NR, pv);
+          pv.y += 1.1 * Math.sin(Math.PI * u) * Math.sin(Math.PI * v); // pillow bulge
+          pos.push(pv.x, pv.y, pv.z);
+        }
+      }
+      for (let a = 0; a < S; a++) {
+        for (let b = 0; b < S; b++) {
+          const p0 = base + a * (S + 1) + b, p1 = p0 + 1, p2 = p0 + S + 1, p3 = p2 + 1;
+          idx.push(p0, p2, p1, p1, p2, p3);
+        }
+      }
+    }
+  }
+  const pillowGeo = new THREE.BufferGeometry();
+  pillowGeo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  pillowGeo.setIndex(idx);
+  pillowGeo.computeVertexNormals();
+  const roofMat = new THREE.MeshStandardMaterial({ color: 0xf4f7fb, roughness: 0.18, metalness: 0.08, transparent: true, opacity: 0.5, depthWrite: false, side: THREE.DoubleSide });
+  const roof = new THREE.Mesh(pillowGeo, roofMat);
   roof.renderOrder = 3;
   group.add(roof);
-  const rim = new THREE.Mesh(mergeGeometries([
-    sweep([[RING.roofInnerD, RING.roofInnerH], [RING.roofInnerD, RING.roofInnerH - 1.6]], () => 0xffffff, { segs: 256 }),
-    sweep([[RING.roofOuterD, RING.roofOuterH], [RING.roofOuterD + 6.5, RING.roofOuterH], [RING.roofOuterD + 6.5, RING.roofOuterH - 1.2]], () => 0xffffff, { segs: 256 }),
-  ]), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.5, side: THREE.DoubleSide }));
+
+  // "CAMP NOU" and the crest painted on the roof's long sides
+  const decalTex = roofDecalTexture();
+  textures.push(decalTex);
+  const decalMat = new THREE.MeshBasicMaterial({ map: decalTex, transparent: true, depthWrite: false, toneMapped: false, opacity: 0.95 });
+  const decals = [];
+  for (const [t, flip] of [[Math.PI / 2, Math.PI], [-Math.PI / 2, Math.PI]]) { // both read upright from the Tribuna side
+    const d = new THREE.Mesh(new THREE.PlaneGeometry(64, 16), decalMat);
+    roofAt(t, 0.5, pv);
+    d.position.set(pv.x, pv.y + 1.4, pv.z);
+    d.rotation.set(-Math.PI / 2, 0, 0);
+    d.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), flip);
+    d.renderOrder = 4;
+    group.add(d);
+    decals.push(d);
+  }
+
+  // ribs between the pillows (they throw the striped shadows)
+  const ribPos = [];
+  const pa = new THREE.Vector3(), pb = new THREE.Vector3();
+  const ribQuad = (a, b, h) => ribPos.push(a.x, a.y, a.z, b.x, b.y, b.z, b.x, b.y - h, b.z, a.x, a.y, a.z, b.x, b.y - h, b.z, a.x, a.y - h, a.z);
+  for (let i = 0; i < NT; i++) {
+    const t = T_START + (i / NT) * Math.PI * 2;
+    for (let k = 0; k < NR * 2; k++) ribQuad(roofAt(t, k / (NR * 2), pa).clone(), roofAt(t, (k + 1) / (NR * 2), pb), 0.7);
+  }
+  for (let j = 1; j < NR; j++) {
+    for (let i = 0; i < NT * 2; i++) {
+      ribQuad(roofAt(T_START + (i / (NT * 2)) * Math.PI * 2, j / NR, pa).clone(), roofAt(T_START + ((i + 1) / (NT * 2)) * Math.PI * 2, j / NR, pb), 0.45);
+    }
+  }
+  const ribGeo = new THREE.BufferGeometry();
+  ribGeo.setAttribute('position', new THREE.Float32BufferAttribute(ribPos, 3));
+  ribGeo.computeVertexNormals();
+  const ribs = new THREE.Mesh(ribGeo, new THREE.MeshStandardMaterial({ color: 0xe9ecf0, roughness: 0.4, metalness: 0.5, side: THREE.DoubleSide }));
+  ribs.castShadow = true;
+  group.add(ribs);
+
+  // blue band around the opening
+  const bandTex = brandTexture('FC BARCELONA', 4, 2048, 160);
+  textures.push(bandTex);
+  const NB = 256, bandH = 6.5, bandPos = [], bandUv = [];
+  for (let i = 0; i < NB; i++) {
+    const t0 = T_START + (i / NB) * Math.PI * 2, t1 = T_START + ((i + 1) / NB) * Math.PI * 2;
+    const r0 = openR(t0), r1 = openR(t1);
+    const ax = r0 * Math.cos(t0), az = r0 * Math.sin(t0), bx = r1 * Math.cos(t1), bz = r1 * Math.sin(t1);
+    const top = IN_H + 1.2, bot = top - bandH;
+    bandPos.push(ax, bot, az, bx, bot, bz, bx, top, bz, ax, bot, az, bx, top, bz, ax, top, az);
+    const u0 = i / NB, u1 = (i + 1) / NB;
+    bandUv.push(u0, 0, u1, 0, u1, 1, u0, 0, u1, 1, u0, 1);
+  }
+  const bandGeo = new THREE.BufferGeometry();
+  bandGeo.setAttribute('position', new THREE.Float32BufferAttribute(bandPos, 3));
+  bandGeo.setAttribute('uv', new THREE.Float32BufferAttribute(bandUv, 2));
+  bandGeo.computeVertexNormals();
+  const band = new THREE.Mesh(bandGeo, new THREE.MeshStandardMaterial({ map: bandTex, emissive: 0xffffff, emissiveMap: bandTex, emissiveIntensity: 0.2, roughness: 0.5, side: THREE.DoubleSide }));
+  band.castShadow = true;
+  group.add(band);
+
+  // thick outer rim of the roof
+  const rim = new THREE.Mesh(
+    sweep([[OUT_D - 3, RING.roofOuterH + 1.2], [OUT_D + 1.5, RING.roofOuterH + 1.2], [OUT_D + 1.5, RING.roofOuterH - 2.2], [WALL_D, RING.roofOuterH - 2.2]], () => 0xd8d2c6, { segs: 256 }),
+    new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, side: THREE.DoubleSide }));
   rim.castShadow = true;
   group.add(rim);
-
-  const trussCount = 128;
-  const trussGeo = new THREE.BoxGeometry(0.5, 1.4, 1).translate(0, 0, 0.5);
-  const truss = new THREE.InstancedMesh(trussGeo, new THREE.MeshStandardMaterial({ color: 0xe7e9ec, roughness: 0.45, metalness: 0.5 }), trussCount);
-  const q = new THREE.Quaternion(), s = new THREE.Vector3(), lookM = new THREE.Matrix4();
-  for (let i = 0; i < trussCount; i++) {
-    const t = T_START + (i / trussCount) * Math.PI * 2;
-    const a = point(t, RING.roofOuterD, {}), b = point(t, RING.roofInnerD, {});
-    const A = new THREE.Vector3(a.x, RING.roofOuterH - 0.4, a.z), B = new THREE.Vector3(b.x, RING.roofInnerH - 0.4, b.z);
-    lookM.lookAt(B, A, UP); // +Z from A towards B
-    q.setFromRotationMatrix(lookM);
-    s.set(1, 1, A.distanceTo(B));
-    truss.setMatrixAt(i, m4.compose(A, q, s));
-  }
-  truss.castShadow = true;
-  truss.computeBoundingSphere();
-  group.add(truss);
-  // ring beams across the trusses
-  const beams = new THREE.Mesh(mergeGeometries([0.25, 0.5, 0.75].map((f) => {
-    const d = RING.roofOuterD + (RING.roofInnerD - RING.roofOuterD) * f;
-    const h = RING.roofOuterH + (RING.roofInnerH - RING.roofOuterH) * f - 0.9;
-    return sweep([[d - 0.3, h], [d + 0.3, h]], () => 0xd9dce0, { segs: 256 });
-  })), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.5, side: THREE.DoubleSide }));
-  beams.castShadow = true;
-  group.add(beams);
 
   // ---- pitch and surroundings
   const pitchTex = pitchTexture(aniso);
@@ -410,6 +558,6 @@ export function buildStadium(scene, renderer) {
   const skyboxes = buildSkyboxes(group);
 
   scene.add(group);
-  const parts = { facade: [facade], roof: [roof, rim, truss, beams], columns: [cols] };
-  return { group, structure, pickMeshes: [structure], roofMat, skyboxes, textures, parts };
+  const parts = { facade: [facade, slats], roof: [roof, ribs, band, rim, ...decals], columns: [cols] };
+  return { group, structure, pickMeshes: [structure], roofMat, decalMat, skyboxes, textures, parts };
 }

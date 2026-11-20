@@ -40,8 +40,8 @@ body.phone .panel { background: var(--panel-solid); -webkit-backdrop-filter: non
 
 /* header */
 .brand { position: absolute; top: calc(16px + var(--sat)); left: calc(16px + var(--sal)); display: flex; align-items: center; gap: 14px; padding: 12px 22px 12px 12px; max-width: min(460px, calc(100vw - 32px)); }
-.logo { width: 46px; height: 46px; border-radius: 50%; flex: none; box-shadow: 0 0 0 4px rgba(165,0,68,0.12); }
-.logo svg { width: 100%; height: 100%; }
+.logo { width: 46px; height: 46px; flex: none; }
+.logo svg, .logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .brand h1 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.01em; }
 .brand p { margin: 2px 0 0; font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .brand-text { min-width: 0; }
@@ -125,7 +125,7 @@ body.phone .chip-tap { display: flex !important; }
 .m-head { display: flex; gap: 12px; align-items: center; width: 100%; }
 .m-head small { display: block; font-size: 12px; color: var(--muted); font-weight: 600; }
 .m-head strong { font-size: 24px; font-weight: 800; }
-.logo.small { width: 40px; height: 40px; background: radial-gradient(circle, #fff 0 55%, var(--garnet) 56%); }
+.logo.small { width: 40px; height: 44px; }
 .m-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 14px; width: 100%; }
 .m-grid small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
 .m-grid b { font-size: 18px; font-weight: 800; }

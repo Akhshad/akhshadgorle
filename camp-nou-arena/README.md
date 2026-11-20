@@ -2,7 +2,7 @@
 
 A 3D seat picker for Spotify Camp Nou that runs in the browser. Fans fly from an aerial view of the stadium into a stand, then a block, then their exact seat. They see the real view from that seat before they confirm a ticket.
 
-It follows the build steps in [`../matchday-arena-showcase`](../matchday-arena-showcase), but uses Camp Nou instead of the stadium in that showcase. This is a fan-made demo. It is not affiliated with FC Barcelona or Spotify.
+It follows the build steps in [`../matchday-arena-showcase`](../matchday-arena-showcase), but uses Camp Nou instead of the stadium in that showcase. This is a personal practice project and fan-made demo. It is not affiliated with FC Barcelona or Spotify, and the club crest and names belong to their owners.
 
 ![Aerial](screenshots/desktop-01-aerial.jpg)
 
@@ -27,12 +27,23 @@ Then open **http://localhost:5173**.
 
 ## What's in it
 
-- **Stadium:** Camp Nou's oval bowl with three steep tiers, the VIP ring, a 360° LED ribbon, the stacked exterior terraces and the ring roof. It's surrounded by Barcelona: Eixample city blocks, Av. Diagonal and a park.
-- **About 90,000 seats** in 96 blocks (32 sectors × 3 tiers) across Tribuna, Lateral, Gol Nord and Gol Sud. Seats use the club colours, and **MÉS QUE UN CLUB** is spelled out in yellow seats on the Lateral upper tier. About 30% of seats are marked as taken, shown in dark grey.
+- **Stadium:** modelled on the renovated Camp Nou:
+  - an oval bowl with three steep tiers and blue FC Barcelona fascias on the tier fronts
+  - a roof of translucent pillow panels with an oval opening ringed by a blue band, and "CAMP NOU" with the crest painted on top
+  - open stacked decks outside, with skirts of slanted multicolour slats
+  - Barcelona around it: Eixample city blocks, Av. Diagonal and a park
+- **About 90,000 seats** in 96 blocks (32 sectors × 3 tiers) across Tribuna, Lateral, Gol Nord and Gol Sud:
+  - the lower tier is blue and the middle and upper tiers are red
+  - **MÉS QUE / UN CLUB** is spelled out in yellow seats on the Lateral middle tier
+  - about 30% of seats are marked as taken, shown in dark grey
 - **The flow:** aerial view → stand → block (rounded high-detail seats) → seat with a ticket and a rendered "Your view" picture → optional skybox upgrade → first-person view from the seat → confirm, with a ticket and QR code. You can step back at any point with the back button, the breadcrumbs or Esc.
 - **Laptop vs phone:** on a laptop you hover to preview and click to choose. On a phone you tap to preview and tap again to choose, and you pinch to zoom. Phones also get solid panels, safe-area insets and their own quality preset.
 - **Smoothness:** the scene only redraws when something changes. Shadows are cached (one shadow map per camera flight), shaders are compiled during the preloader, and resolution adjusts dynamically based on the device's frame cadence. It also redraws after a resize, a tab switch or a GPU context loss.
 - **Extras:** a bouncing-football preloader, a Refresh button, and a colour grade built into the tone-mapping shader.
+
+## Club crest
+
+The crest is drawn in code (`js/crest.js`). It appears in the header, on the ticket, on the roof and on the blue bands. To use the official artwork instead, save it as `assets/crest.png` (a transparent PNG works best) and reload the page.
 
 ## Live screens
 
@@ -57,6 +68,7 @@ If the model doesn't line up, adjust `MODEL.scale`, `MODEL.rotationY` and `MODEL
 | `js/seats.js` | Instanced seats, highlighting, high-detail block |
 | `js/world.js` | Sky, sun, colour grade, Barcelona around the stadium |
 | `js/screens.js` | Live YouTube screens in 3D |
+| `js/crest.js` | Club crest (drawn in code, or loaded from `assets/crest.png`) |
 | `js/main.js` | Flow, camera flights, picking, render loop |
 | `vendor/three` | three.js r180 (MIT), bundled so the site runs offline |
 | `server.js` | Small static server with no dependencies |

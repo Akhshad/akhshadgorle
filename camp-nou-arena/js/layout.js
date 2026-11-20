@@ -101,7 +101,7 @@ function blockPrice(tier, k) {
 // Rasterise the "MÉS QUE UN CLUB" lettering that Camp Nou spells out in
 // yellow seats across the middle and upper tiers of the Lateral stand.
 function makeLettering() {
-  const W = 900, H = 100;
+  const W = 600, H = 220;
   const cv = document.createElement('canvas');
   cv.width = W; cv.height = H;
   const g = cv.getContext('2d');
@@ -110,8 +110,9 @@ function makeLettering() {
   g.fillStyle = '#fff';
   g.textAlign = 'center';
   g.textBaseline = 'middle';
-  g.font = '900 104px "Arial Black", Arial, Helvetica, sans-serif';
-  g.fillText('MÉS QUE UN CLUB', W / 2, H / 2 + 8, W - 10);
+  g.font = '900 96px "Arial Black", Arial, Helvetica, sans-serif';
+  g.fillText('MÉS QUE', W / 2, H * 0.27, W - 10);
+  g.fillText('UN CLUB', W / 2, H * 0.75, W - 10);
   const data = g.getImageData(0, 0, W, H).data;
   return {
     hit(u, v) {
@@ -128,8 +129,8 @@ export function buildSeats() {
   const xs = [], ys = [], zs = [], yaws = [], rows = [], nums = [], blockOf = [], taken = [], base = [];
   const blocks = [];
   const letters = makeLettering();
-  const LT0 = 47 * Math.PI / 180, LT1 = 133 * Math.PI / 180; // Lateral lettering span
-  const lettered = TIERS[2].rows;
+  const LT0 = 58 * Math.PI / 180, LT1 = 122 * Math.PI / 180; // Lateral lettering span
+  const lettered = TIERS[1].rows;
 
   const tmpP = {}, tmpN = {};
   const SAMPLES = 96;
@@ -180,13 +181,14 @@ export function buildSeats() {
           taken.push(tk ? 1 : 0);
           if (!tk) block.free++;
 
-          let col = tier.id === 1 ? COLORS.blue : COLORS.garnet;
-          if (stand === 1 && tier.id === 2 && t > LT0 && t < LT1) {
+          let col = tier.id === 0 ? COLORS.blue : COLORS.red;
+          if (stand === 1 && tier.id === 1 && t > LT0 && t < LT1) {
             const gr = i;
             const u = (t - LT0) / (LT1 - LT0);
             const v = 1 - (gr + 0.5) / lettered;
             if (letters.hit(u, v)) col = COLORS.yellow;
           }
+          if (col === COLORS.yellow && tk) { taken[taken.length - 1] = 0; block.free++; }
           base.push(col);
           block.cx += tmpP.x; block.cy += h; block.cz += tmpP.z;
           block.count++;

@@ -30,7 +30,8 @@ export const TAKEN_SHARE = 0.3;
 
 export const COLORS = {
   garnet: 0xa50044,
-  blue: 0x1d4fa3,
+  blue: 0x1f56c8,
+  red: 0xd9283b,
   yellow: 0xf6c400,
   taken: 0x3a3f4c,
   hover: 0xff9a2e,
