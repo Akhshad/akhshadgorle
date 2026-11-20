@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#0c1630" />
+  <title>Spotify Camp Nou · Seat Picker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="./styles.css" />
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/" } }
+  </script>
+</head>
+<body>
+  <div id="css-host"></div>
+  <canvas id="gl"></canvas>
+
+  <div id="ui" class="hidden-ui">
+    <header class="panel brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="19" fill="#a50044"/><circle cx="20" cy="20" r="13" fill="#fff"/><path d="M20 12.5l5 3.6-1.9 5.9h-6.2L15 16.1z" fill="#0c1630"/><path d="M20 7v5.5M30.5 15.5l-5.5.6M27 30l-3.9-8M13 30l3.9-8M9.5 15.5l5.5.6" stroke="#0c1630" stroke-width="1.6"/></svg>
+      </div>
+      <div class="brand-text">
+        <h1 id="site-title"></h1>
+        <p id="site-fixture"></p>
+      </div>
+    </header>
+
+    <nav class="crumbs-row">
+      <button id="back" class="panel icon-btn hidden" aria-label="Back">
+        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div id="crumbs" class="panel crumbs"></div>
+    </nav>
+
+    <div class="top-right">
+      <div class="panel pill" id="live">
+        <i class="dot"></i><b id="live-count">14 screens</b><span id="live-sub"></span>
+      </div>
+      <div class="tr-buttons">
+        <button id="sound" class="panel btn" aria-pressed="false">
+          <svg viewBox="0 0 24 24" class="ic-off"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M17 9l5 5M22 9l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 24 24" class="ic-on"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Sound off</span>
+        </button>
+        <button id="refresh" class="panel btn" aria-label="Refresh">
+          <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 11-2.3-5.6M20 4v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="chip" class="panel chip hidden">
+      <div class="chip-main">
+        <small id="chip-kicker"></small>
+        <strong id="chip-title"></strong>
+        <span id="chip-sub"><i></i><em></em></span>
+        <span id="chip-tap" class="chip-tap">Tap again to open</span>
+      </div>
+      <div class="chip-price" id="chip-price-wrap"><small>EUR</small><b id="chip-price"></b></div>
+    </div>
+
+    <div id="ticket" class="ticket hidden">
+      <div class="t-view">
+        <canvas id="t-canvas" width="480" height="300"></canvas>
+        <span class="t-tag"><i></i>Your view</span>
+      </div>
+      <div class="t-body">
+        <small id="t-kicker"></small>
+        <strong id="t-title"></strong>
+        <div class="t-grid">
+          <div><small id="t-l1">Row</small><b id="t-row"></b></div>
+          <div><small id="t-l2">Seat</small><b id="t-seat"></b></div>
+          <div><small>Gate</small><b id="t-gate"></b></div>
+        </div>
+        <div class="t-actions">
+          <button id="t-primary" class="primary"></button>
+          <button id="t-secondary" class="link"></button>
+        </div>
+      </div>
+      <div class="t-stub">
+        <small>EUR</small>
+        <div class="barcode"></div>
+        <b id="t-price"></b>
+      </div>
+    </div>
+
+    <div id="viewcard" class="panel chip viewcard hidden">
+      <div class="chip-main">
+        <small id="v-kicker"></small>
+        <strong>Your view</strong>
+        <span id="v-sub"><i></i><em></em></span>
+      </div>
+      <div class="chip-price"><small>EUR</small><b id="v-price"></b></div>
+    </div>
+
+    <div id="actions" class="actions hidden">
+      <button id="confirm" class="primary">Confirm ticket</button>
+      <button id="another" class="secondary panel">Choose another seat</button>
+    </div>
+
+    <div id="hint" class="hint"></div>
+    <div id="credits">Procedural model inspired by Spotify Camp Nou · fan-made demo, not affiliated with FC Barcelona or Spotify · Sky &amp; rendering: three.js</div>
+
+    <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="m-card">
+        <div class="m-head">
+          <div class="logo small" aria-hidden="true"></div>
+          <div><small id="m-fixture"></small><strong id="m-title">You're going!</strong></div>
+        </div>
+        <div class="m-grid">
+          <div><small>Stand</small><b id="m-stand"></b></div>
+          <div><small id="m-l1">Block</small><b id="m-block"></b></div>
+          <div><small id="m-l2">Row</small><b id="m-row"></b></div>
+          <div><small id="m-l3">Seat</small><b id="m-seat"></b></div>
+          <div><small>Gate</small><b id="m-gate"></b></div>
+          <div><small>Price</small><b id="m-price"></b></div>
+        </div>
+        <canvas id="m-qr" width="220" height="220"></canvas>
+        <p class="m-note">Demo ticket · not valid for entry</p>
+        <button id="m-done" class="primary">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="preloader">
+    <div class="pl-stage">
+      <div class="pl-glow"></div>
+      <div class="pl-ball">
+        <div class="pl-spin">
+          <svg viewBox="0 0 100 100">
+            <defs><clipPath id="bc"><circle cx="50" cy="50" r="47"/></clipPath></defs>
+            <circle cx="50" cy="50" r="47" fill="#fff"/>
+            <g clip-path="url(#bc)" fill="#14161c">
+              <path d="M50 33l16 11.6-6.1 18.8H40.1L34 44.6z"/>
+              <path d="M50 3l12 6-2 10-10 6-10-6-2-10z"/>
+              <path d="M95 40l-6 14-10 1-7-9 3-12 12-3z"/>
+              <path d="M78 92l-14 2-5-9 6-10 11 0 6 9z"/>
+              <path d="M22 92l14 2 5-9-6-10-11 0-6 9z"/>
+              <path d="M5 40l6 14 10 1 7-9-3-12-12-3z"/>
+            </g>
+            <circle cx="50" cy="50" r="47" fill="none" stroke="#14161c" stroke-width="2"/>
+            <circle cx="50" cy="50" r="47" fill="url(#shade)"/>
+            <defs><radialGradient id="shade" cx="35%" cy="30%" r="75%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".28"/></radialGradient></defs>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="pl-title">Spotify Camp Nou</div>
+    <div class="pl-bar"><i id="pl-progress"></i></div>
+    <div class="pl-status" id="pl-status">Loading</div>
+  </div>
+
+  <noscript>This site needs JavaScript and WebGL.</noscript>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

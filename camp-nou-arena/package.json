@@ -1,0 +1,10 @@
+{
+  "name": "camp-nou-arena",
+  "version": "1.0.0",
+  "private": true,
+  "description": "3D Spotify Camp Nou seat picker in the browser (Three.js, no build step).",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": { "node": ">=18" }
+}
